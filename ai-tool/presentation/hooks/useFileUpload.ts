@@ -33,7 +33,7 @@ export function useFileUpload({ fileType, onSuccess, onError }: UseFileUploadOpt
       const limits = fileType === 'image' ? FILE_LIMITS.IMAGE : FILE_LIMITS.DOCUMENT;
 
       // Validate file type
-      if (!limits.ALLOWED_TYPES.includes(file.type as any)) {
+      if (!(limits.ALLOWED_TYPES as readonly string[]).includes(file.type)) {
         const allowedStr = limits.ALLOWED_EXTENSIONS.join(', ').toUpperCase();
         return {
           valid: false,
