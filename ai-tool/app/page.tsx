@@ -4,10 +4,14 @@ import { useState } from 'react';
 import { AnalysisResult } from '@/types';
 import { AnalysisResults } from '@/components/AnalysisResults';
 import { formatCount } from '@/lib/utils';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 const MAX_CHARS = 5000;
 
+type InputMode = 'text' | 'image' | 'document' | 'youtube';
+
 export default function Home() {
+  const [inputMode, setInputMode] = useState<InputMode>('text');
   const [text, setText] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
@@ -15,6 +19,8 @@ export default function Home() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+  const [documentFile, setDocumentFile] = useState<File | null>(null);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,6 +57,55 @@ export default function Home() {
     setExtractedText(null);
   };
 
+  const handleModeChange = (mode: InputMode) => {
+    setInputMode(mode);
+    setError(null);
+    setResult(null);
+    // Clear other inputs when switching modes
+    if (mode !== 'text') setText('');
+    if (mode !== 'image') {
+      setImagePreview(null);
+      setImageBase64(null);
+    }
+    if (mode !== 'document') setDocumentFile(null);
+    if (mode !== 'youtube') setYoutubeUrl('');
+  };
+
+  const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+    ];
+    
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please upload a valid document (PDF, DOCX, DOC, or TXT)');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Document size must be less than 10MB');
+      return;
+    }
+
+    setDocumentFile(file);
+    setError(null);
+  };
+
+  const handleRemoveDocument = () => {
+    setDocumentFile(null);
+  };
+
+  const handleDocumentExtract = () => {
+    setError('Document extraction is coming soon! This feature will allow you to extract and analyze text from PDF, Word, and other document formats.');
+  };
+
   const handlePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
     if (!items) return;
@@ -74,6 +129,7 @@ export default function Home() {
           const base64String = reader.result as string;
           setImagePreview(base64String);
           setImageBase64(base64String);
+          setInputMode('image'); // Switch to image mode
           setText(''); // Clear text input when image is pasted
           setExtractedText(null);
           setError(null);
@@ -82,6 +138,10 @@ export default function Home() {
         break;
       }
     }
+  };
+
+  const handleYoutubeExtract = () => {
+    setError('YouTube video extraction is coming soon! This feature will allow you to extract and analyze text from video transcripts.');
   };
 
   const handleAnalyze = async () => {
@@ -165,7 +225,12 @@ export default function Home() {
     >
       <main className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 relative">
+          {/* Theme Toggle - Positioned in top right */}
+          <div className="absolute top-0 right-0">
+            <ThemeToggle />
+          </div>
+          
           <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">
             AI Text Summarizer
           </h1>
@@ -179,11 +244,104 @@ export default function Home() {
 
         {/* Input Section */}
         <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-6 mb-8">
-          {/* Image Upload Section */}
-          {!imagePreview && (
+          {/* Mode Selector Tabs */}
+          <div className="mb-6">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+              <button
+                onClick={() => handleModeChange('text')}
+                className={`px-3 py-2.5 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                  inputMode === 'text'
+                    ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="hidden sm:inline">Text</span>
+              </button>
+              
+              <button
+                onClick={() => handleModeChange('image')}
+                className={`px-3 py-2.5 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
+                  inputMode === 'image'
+                    ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Image</span>
+              </button>
+              
+              <button
+                onClick={() => handleModeChange('document')}
+                className={`px-3 py-2.5 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 relative ${
+                  inputMode === 'document'
+                    ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                <span className="hidden sm:inline">Document</span>
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
+                  Soon
+                </span>
+              </button>
+              
+              <button
+                onClick={() => handleModeChange('youtube')}
+                className={`px-3 py-2.5 rounded-md font-medium transition-all duration-200 flex items-center justify-center gap-2 relative ${
+                  inputMode === 'youtube'
+                    ? 'bg-white dark:bg-zinc-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                    : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200'
+                }`}
+                disabled={loading}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="hidden sm:inline">YouTube</span>
+                <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
+                  Soon
+                </span>
+              </button>
+            </div>
+          </div>
+
+          {/* Text Input Mode */}
+          {inputMode === 'text' && (
+            <div className="mb-4">
+              <label
+                htmlFor="text-input"
+                className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2"
+              >
+                Your Text
+              </label>
+              <textarea
+                id="text-input"
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Paste or type your text here (up to 5,000 characters)..."
+                className="w-full h-64 px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all"
+                disabled={loading}
+              />
+            </div>
+          )}
+
+          {/* Image Upload Mode */}
+          {inputMode === 'image' && !imagePreview && (
             <div className="mb-6">
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                Upload Image (Optional)
+                Upload or Paste Image
               </label>
               <div className="flex items-center gap-4 flex-wrap">
                 <label
@@ -228,7 +386,7 @@ export default function Home() {
           )}
 
           {/* Image Preview */}
-          {imagePreview && (
+          {inputMode === 'image' && imagePreview && (
             <div className="mb-6">
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                 Uploaded Image
@@ -274,30 +432,126 @@ export default function Home() {
             </div>
           )}
 
-          {/* Text Input */}
-          {!imagePreview && (
+          {/* Document Mode */}
+          {inputMode === 'document' && (
+            <div className="mb-4">
+              {!documentFile ? (
+                <>
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                    Upload Document
+                  </label>
+                  <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                    <label
+                      htmlFor="document-upload"
+                      className="flex flex-col items-center justify-center cursor-pointer w-full h-full"
+                    >
+                      <svg className="w-12 h-12 text-zinc-400 dark:text-zinc-600 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                        Click to upload document
+                      </p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        PDF, DOCX, DOC, or TXT (max 10MB)
+                      </p>
+                    </label>
+                    <input
+                      id="document-upload"
+                      type="file"
+                      accept=".pdf,.doc,.docx,.txt"
+                      onChange={handleDocumentUpload}
+                      className="hidden"
+                      disabled={loading}
+                    />
+                  </div>
+                  <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div>
+                        <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
+                          Coming Soon!
+                        </h3>
+                        <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                          Document text extraction is currently under development. This feature will support PDF, Word, and plain text documents.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div>
+                  <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
+                    Uploaded Document
+                  </label>
+                  <div className="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg">
+                    <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                        {documentFile.name}
+                      </p>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {(documentFile.size / 1024).toFixed(2)} KB
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleRemoveDocument}
+                      disabled={loading}
+                      className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      title="Remove document"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* YouTube Mode */}
+          {inputMode === 'youtube' && (
             <div className="mb-4">
               <label
-                htmlFor="text-input"
+                htmlFor="youtube-input"
                 className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2"
               >
-                Your Text
+                YouTube Video URL
               </label>
-              <textarea
-                id="text-input"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Paste or type your text here (up to 5,000 characters)..."
-                className="w-full h-64 px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all"
-                disabled={loading}
+              <input
+                id="youtube-input"
+                type="url"
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+                placeholder="https://www.youtube.com/watch?v=..."
+                className="w-full px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                disabled={true}
               />
+              <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <div className="flex items-start gap-3">
+                  <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div>
+                    <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
+                      Coming Soon!
+                    </h3>
+                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                      YouTube transcript extraction is currently under development. This feature will allow you to extract and analyze text from video transcripts automatically.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
           {/* Character Counter and Analyze Button */}
           <div className="flex items-center justify-between mb-4">
-            {!imagePreview && (
+            {inputMode === 'text' && (
               <div className="flex items-center gap-2">
                 <div className="w-32 h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
                   <div
@@ -316,10 +570,18 @@ export default function Home() {
                 </span>
               </div>
             )}
-            {imagePreview && <div />}
+            {inputMode !== 'text' && <div />}
             <button
-              onClick={handleAnalyze}
-              disabled={loading || (!text.trim() && !imageBase64)}
+              onClick={
+                inputMode === 'youtube' ? handleYoutubeExtract :
+                inputMode === 'document' ? handleDocumentExtract :
+                handleAnalyze
+              }
+              disabled={
+                loading || 
+                (inputMode === 'text' && !text.trim()) || 
+                (inputMode === 'image' && !imageBase64)
+              }
               className="px-8 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-zinc-300 dark:disabled:bg-zinc-700 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg disabled:shadow-none flex items-center gap-2"
             >
               {loading ? (
@@ -367,9 +629,14 @@ export default function Home() {
             </button>
           </div>
 
-          {!imagePreview && (
+          {inputMode === 'text' && (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze
+            </p>
+          )}
+          {inputMode === 'image' && !imagePreview && (
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard
             </p>
           )}
         </div>

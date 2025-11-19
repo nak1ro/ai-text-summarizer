@@ -4,6 +4,11 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
 
 ## ✨ Features
 
+- **🎛️ Multi-Mode Input System**: Easy tab-based switching between input methods
+  - **Text Mode**: Direct text input
+  - **Image Mode**: Upload or paste images with OCR
+  - **Document Mode**: Coming soon - extract from PDF, Word, TXT files
+  - **YouTube Mode**: Coming soon - extract from video transcripts
 - **📝 Text Input**: Paste or type up to 5,000 characters of text
 - **📷 Image Upload & Paste**: Upload or paste images with text (OCR support via OpenAI Vision)
   - **Ctrl+V / Cmd+V**: Paste images directly from clipboard
@@ -12,13 +17,18 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
   - Support for various image formats (JPG, PNG, etc.)
   - Max image size: 5MB
   - Shows error if no text is detected in the image
+- **📄 Document Support (Coming Soon)**: Extract text from PDF, Word, and TXT files (up to 10MB)
+- **🎬 YouTube Support (Coming Soon)**: Extract and analyze video transcripts
 - **⚡ One-Click Analysis**: Get instant AI-powered insights
 - **📊 Rich Results Display**: 
   - Concise Summary
   - Key Points (bullet list)
   - Simple Explanation (ELI5-style)
   - Reading Time & Stats (estimated time + word count)
-- **🎨 Modern UI**: Clean, responsive design with dark mode support
+- **🎨 Modern UI**: Clean, responsive design with light/dark mode toggle
+  - Manual theme switcher in the header
+  - Automatic system preference detection
+  - Theme persists across sessions
 - **💰 Cost-Efficient**: Uses GPT-4o-mini for fast, affordable analysis
 - **⌨️ Keyboard Shortcuts**: Ctrl/Cmd + Enter to analyze
 
