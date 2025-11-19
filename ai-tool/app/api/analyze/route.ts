@@ -1,7 +1,7 @@
 import {NextRequest, NextResponse} from 'next/server';
 import OpenAI from 'openai';
 import {AnalyzeRequest, AnalyzeResponse, AnalysisResult} from '@/types';
-import {calculateReadingTime} from '@/lib/utils';
+import {calculateReadingTime, countWords} from '@/lib/utils';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -168,6 +168,7 @@ ${text}`;
 
         // Fallback to calculated reading time if AI doesn't provide it
         const readingTime = parsedResponse.reading_time_minutes || calculateReadingTime(text);
+        const wordCount = countWords(text);
 
         const result: AnalysisResult = {
             summary: parsedResponse.summary || 'No summary available',
@@ -176,6 +177,7 @@ ${text}`;
                 : [],
             explanation: parsedResponse.explanation || 'No explanation available',
             readingTime,
+            wordCount,
         };
 
         return NextResponse.json<AnalyzeResponse>(

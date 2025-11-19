@@ -4,6 +4,7 @@ export interface AnalysisResult {
   keyPoints: string[];
   explanation: string;
   readingTime: number; // in minutes
+  wordCount: number; // total words in the text
 }
 
 // API request body

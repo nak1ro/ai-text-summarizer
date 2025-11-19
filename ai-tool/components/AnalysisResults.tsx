@@ -89,7 +89,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
 
             {/* Reading Time Card */}
             <ResultCard
-                title="Reading Time"
+                title="Reading Time & Stats"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -106,17 +106,35 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <div className="flex items-baseline gap-2">
-          <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-            {result.readingTime}
-          </span>
-                    <span className="text-lg text-zinc-600 dark:text-zinc-400">
-            {result.readingTime === 1 ? 'minute' : 'minutes'}
-          </span>
+                <div className="space-y-4">
+                    <div>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
+                                {result.readingTime}
+                            </span>
+                            <span className="text-lg text-zinc-600 dark:text-zinc-400">
+                                {result.readingTime === 1 ? 'minute' : 'minutes'}
+                            </span>
+                        </div>
+                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                            Estimated reading time
+                        </p>
+                    </div>
+                    
+                    <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700">
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
+                                {result.wordCount.toLocaleString()}
+                            </span>
+                            <span className="text-base text-zinc-600 dark:text-zinc-400">
+                                {result.wordCount === 1 ? 'word' : 'words'}
+                            </span>
+                        </div>
+                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                            Total word count
+                        </p>
+                    </div>
                 </div>
-                <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                    Estimated time to read the original text
-                </p>
             </ResultCard>
         </div>
     );

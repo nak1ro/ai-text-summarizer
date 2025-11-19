@@ -17,7 +17,7 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
   - Concise Summary
   - Key Points (bullet list)
   - Simple Explanation (ELI5-style)
-  - Estimated Reading Time
+  - Reading Time & Stats (estimated time + word count)
 - **🎨 Modern UI**: Clean, responsive design with dark mode support
 - **💰 Cost-Efficient**: Uses GPT-4o-mini for fast, affordable analysis
 - **⌨️ Keyboard Shortcuts**: Ctrl/Cmd + Enter to analyze
@@ -116,7 +116,8 @@ Analyzes text or extracts and analyzes text from images.
       "Third key point"
     ],
     "explanation": "Simple explanation of the content",
-    "readingTime": 3
+    "readingTime": 3,
+    "wordCount": 542
   },
   "extractedText": "Text extracted from image (only if image was uploaded)"
 }
