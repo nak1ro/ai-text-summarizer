@@ -11,6 +11,7 @@ import {StatCard} from './shared/StatCard';
 import {TopWordsModal} from './shared/TopWordsModal';
 import {CopyButton} from './shared/CopyButton';
 import {Toast} from './shared/Toast';
+import {ReadingComplexityChart} from './shared/ReadingComplexityChart';
 
 interface AnalysisResultsProps {
     result: AnalysisResult;
@@ -260,7 +261,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 {!collapsedSections.stats && (
                 <div className="space-y-6">
                     {/* First Row - Main Stats */}
-                    <div className="grid md:grid-cols-3 gap-6">
+                    <div className="grid md:grid-cols-2 gap-6">
                         <StatCard
                             value={result.readingTime}
                             unit={result.readingTime === 1 ? t.minute : t.minutes}
@@ -282,17 +283,11 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             glowColor="bg-emerald-400/20 dark:bg-emerald-600/20"
                             textColor="text-emerald-600 dark:text-emerald-400"
                         />
-                        
-                        <StatCard
-                            value={result.readingLevel}
-                            label="Reading Level"
-                            gradient="from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20"
-                            textGradient="from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400"
-                            borderColor="border-teal-200/50 dark:border-teal-800/50"
-                            glowColor="bg-teal-400/20 dark:bg-teal-600/20"
-                            textColor="text-teal-600 dark:text-teal-400"
-                            size="sm"
-                        />
+                    </div>
+                    
+                    {/* Reading Complexity Chart - Full Width */}
+                    <div className="w-full">
+                        <ReadingComplexityChart readingLevel={result.readingLevel} />
                     </div>
                     
                     {/* Second Row - Additional Stats */}
