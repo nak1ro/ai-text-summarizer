@@ -1,9 +1,17 @@
 import {NextRequest, NextResponse} from 'next/server';
 import OpenAI from 'openai';
 import {AnalyzeRequest, AnalyzeResponse, AnalysisResult} from '@/types';
-import {calculateReadingTime, countWords} from '@/lib/utils';
+import {
+    calculateReadingTime,
+    calculateSpeakingTime,
+    countWords,
+    countUniqueWords,
+    calculateAverageSentenceLength,
+    getMostFrequentWords
+} from '@/lib/utils';
 import mammoth from 'mammoth';
 import axios from 'axios';
+
 const {PdfReader} = require('pdfreader');
 
 const openai = new OpenAI({
@@ -26,7 +34,7 @@ export async function POST(request: NextRequest) {
                 // Validate YouTube URL
                 const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
                 const match = youtubeUrl.match(youtubeRegex);
-                
+
                 if (!match) {
                     return NextResponse.json<AnalyzeResponse>(
                         {
@@ -62,7 +70,7 @@ export async function POST(request: NextRequest) {
 
                 // Extract transcript text - transcripts is an array of segment objects
                 const transcripts = searchApiResponse.data?.transcripts;
-                
+
                 if (!transcripts || !Array.isArray(transcripts) || transcripts.length === 0) {
                     console.error('No transcripts found in response');
                     return NextResponse.json<AnalyzeResponse>(
@@ -75,18 +83,18 @@ export async function POST(request: NextRequest) {
                 }
 
                 console.log('Found', transcripts.length, 'transcript segments');
-                
+
                 // SearchAPI returns an array of segments, each with { text, start, duration }
                 // We need to extract the text from ALL segments and join them
                 const transcriptText = transcripts
                     .map((segment: any) => segment.text || '')
                     .filter(Boolean)
                     .join(' ');
-                
+
                 console.log('Extracted transcript length:', transcriptText.length);
                 console.log('First 200 chars:', transcriptText.substring(0, 200));
                 console.log('Last 200 chars:', transcriptText.substring(Math.max(0, transcriptText.length - 200)));
-                
+
                 if (!transcriptText || transcriptText.trim().length === 0) {
                     console.error('Transcript text is empty after extraction');
                     return NextResponse.json<AnalyzeResponse>(
@@ -108,7 +116,7 @@ export async function POST(request: NextRequest) {
                     response: youtubeError.response?.data,
                     status: youtubeError.response?.status,
                 });
-                
+
                 if (axios.isAxiosError(youtubeError)) {
                     if (youtubeError.code === 'ECONNABORTED') {
                         return NextResponse.json<AnalyzeResponse>(
@@ -147,7 +155,7 @@ export async function POST(request: NextRequest) {
                         );
                     }
                 }
-                
+
                 return NextResponse.json<AnalyzeResponse>(
                     {
                         success: false,
@@ -161,10 +169,10 @@ export async function POST(request: NextRequest) {
         else if (document && documentName) {
             try {
                 // Remove data URL prefix if present
-                const base64Data = document.includes(',') 
-                    ? document.split(',')[1] 
+                const base64Data = document.includes(',')
+                    ? document.split(',')[1]
                     : document;
-                
+
                 const buffer = Buffer.from(base64Data, 'base64');
                 const extension = documentName.split('.').pop()?.toLowerCase();
 
@@ -338,7 +346,27 @@ Your goals:
 2. Extract the most important key points as bullet list items.
 3. Give a simple, easy-to-understand explanation of the text, written in plain language so that anyone can understand it.
 4. Estimate the reading time in minutes (round up to the nearest whole number).
-5. Assess the reading difficulty level similar to Flesch-Kincaid readability scores. Provide a grade level (e.g., "5th grade", "8th grade", "College level") followed by a brief descriptor in parentheses (e.g., "easy to understand", "moderately complex", "advanced", "very simple").
+5. Perform a comprehensive reading complexity analysis:
+   - Assess sentence structure complexity (simple, compound, complex sentences)
+   - Evaluate vocabulary difficulty (common words vs. technical/specialized terms)
+   - Analyze conceptual density (how many ideas per sentence/paragraph)
+   - Consider syntactic complexity (sentence length, clause structure)
+   - Determine appropriate grade level based on Flesch-Kincaid scale
+   - Provide format: "Grade level (descriptor)" where descriptor indicates difficulty
+   
+   Grade Level Guide:
+   • Elementary (K-5th): Very simple, short sentences, basic vocabulary
+   • Middle School (6th-8th): Moderate complexity, some longer sentences
+   • High School (9th-12th): More complex structures, diverse vocabulary
+   • College (13th-16th): Advanced concepts, sophisticated language
+   • Graduate/Professional (17th+): Highly technical, specialized terminology
+   
+   Descriptors to use:
+   • "very easy" - elementary level
+   • "easy to understand" - middle school level
+   • "moderately complex" - high school level
+   • "advanced" - college level
+   • "highly technical" - graduate/professional level
 
 Follow these rules:
 - The output MUST be valid JSON.
@@ -348,7 +376,8 @@ Follow these rules:
 - The explanation must remain simple and beginner-friendly.
 - Key points must be a clean array of strings.
 - For reading_time_minutes, output only a number.
-- For reading_level, provide format like: "7th grade (easy to understand)" or "College level (advanced)"
+- For reading_level, analyze sentence structure, vocabulary, and conceptual complexity to determine accurate grade level
+- Use format: "7th grade (easy to understand)" or "College level (advanced)" or "Graduate level (highly technical)"
 - If the input is unclear or incomplete, interpret it reasonably.
 
 Expected JSON structure:
@@ -392,9 +421,13 @@ ${text}`;
         // Parse JSON response
         const parsedResponse = JSON.parse(aiResponse);
 
-        // Fallback to calculated reading time if AI doesn't provide it
+        // Calculate all statistics
         const readingTime = parsedResponse.reading_time_minutes || calculateReadingTime(text);
+        const speakingTime = calculateSpeakingTime(text);
         const wordCount = countWords(text);
+        const uniqueWords = countUniqueWords(text);
+        const averageSentenceLength = calculateAverageSentenceLength(text);
+        const topWords = getMostFrequentWords(text, 5);
         const readingLevel = parsedResponse.reading_level || 'General audience';
 
         const result: AnalysisResult = {
@@ -406,6 +439,10 @@ ${text}`;
             readingTime,
             wordCount,
             readingLevel,
+            speakingTime,
+            uniqueWords,
+            averageSentenceLength,
+            topWords,
         };
 
         return NextResponse.json<AnalyzeResponse>(

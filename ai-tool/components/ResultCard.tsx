@@ -1,7 +1,7 @@
 import React from 'react';
 
 interface ResultCardProps {
-    title: string;
+    title: string | React.ReactNode;
     icon: React.ReactNode;
     children: React.ReactNode;
     className?: string;

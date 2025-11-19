@@ -1,9 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, {useState} from 'react';
 import {AnalysisResult} from '@/types';
 import {ResultCard} from './ResultCard';
 import {useTranslation} from '@/hooks/useTranslation';
+import {CollapseToggle} from './shared/CollapseToggle';
+import {NavigationButton} from './shared/NavigationButton';
+import {ExpandableText} from './shared/ExpandableText';
+import {StatCard} from './shared/StatCard';
 
 interface AnalysisResultsProps {
     result: AnalysisResult;
@@ -12,11 +16,79 @@ interface AnalysisResultsProps {
 export function AnalysisResults({result}: AnalysisResultsProps) {
     const {t} = useTranslation();
     
+    // State for collapsed sections
+    const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
+        summary: false,
+        keyPoints: false,
+        explanation: false,
+        stats: false,
+    });
+    
+    const toggleSection = (section: string) => {
+        setCollapsedSections(prev => ({
+            ...prev,
+            [section]: !prev[section]
+        }));
+    };
+    
+    const scrollToSection = (sectionId: string) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+    
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6 animate-fadeIn">
+            {/* Jump Navigation */}
+            <div className="sticky top-4 z-20 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-2xl shadow-lg border border-zinc-200/50 dark:border-zinc-700/50 p-4 animate-slideIn">
+                <div className="flex items-center gap-2 text-sm font-medium text-zinc-600 dark:text-zinc-400 mb-3">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span>Quick Navigation</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                    <NavigationButton
+                        onClick={() => scrollToSection('summary-section')}
+                        emoji="📝"
+                        label="Summary"
+                        color="blue"
+                    />
+                    <NavigationButton
+                        onClick={() => scrollToSection('keypoints-section')}
+                        emoji="📋"
+                        label="Key Points"
+                        color="purple"
+                    />
+                    <NavigationButton
+                        onClick={() => scrollToSection('explanation-section')}
+                        emoji="💡"
+                        label="Explanation"
+                        color="pink"
+                    />
+                    <NavigationButton
+                        onClick={() => scrollToSection('stats-section')}
+                        emoji="📊"
+                        label="Stats"
+                        color="green"
+                    />
+                </div>
+            </div>
+
             {/* Summary Card */}
+            <div id="summary-section">
             <ResultCard
-                title={t.summary}
+                title={
+                    <div className="flex items-center justify-between w-full">
+                        <span>{t.summary}</span>
+                        <CollapseToggle
+                            isCollapsed={collapsedSections.summary}
+                            onToggle={() => toggleSection('summary')}
+                            ariaLabel="Toggle summary"
+                        />
+                    </div>
+                }
                 accentColor="blue"
                 icon={
                     <svg
@@ -34,12 +106,25 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <p className="text-base leading-relaxed">{result.summary}</p>
+                {!collapsedSections.summary && (
+                    <ExpandableText text={result.summary} accentColor="blue" />
+                )}
             </ResultCard>
+            </div>
 
             {/* Key Points Card */}
+            <div id="keypoints-section">
             <ResultCard
-                title={t.keyPoints}
+                title={
+                    <div className="flex items-center justify-between w-full">
+                        <span>{t.keyPoints}</span>
+                        <CollapseToggle
+                            isCollapsed={collapsedSections.keyPoints}
+                            onToggle={() => toggleSection('keyPoints')}
+                            ariaLabel="Toggle key points"
+                        />
+                    </div>
+                }
                 accentColor="purple"
                 icon={
                     <svg
@@ -57,22 +142,35 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <ul className="space-y-4">
-                    {result.keyPoints.map((point, index) => (
-                        <li key={index} className="flex gap-4 group">
-              <span
-                  className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center text-sm font-bold shadow-md group-hover:scale-110 transition-transform duration-300">
-                {index + 1}
-              </span>
-                            <span className="flex-1 pt-1 text-base">{point}</span>
-                        </li>
-                    ))}
-                </ul>
+                {!collapsedSections.keyPoints && (
+                    <ul className="space-y-4">
+                        {result.keyPoints.map((point, index) => (
+                            <li key={index} className="flex gap-4 group">
+                  <span
+                      className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center text-sm font-bold shadow-md group-hover:scale-110 transition-transform duration-300">
+                    {index + 1}
+                  </span>
+                                <span className="flex-1 pt-1 text-base">{point}</span>
+                            </li>
+                        ))}
+                    </ul>
+                )}
             </ResultCard>
+            </div>
 
             {/* Explanation Card */}
+            <div id="explanation-section">
             <ResultCard
-                title={t.simpleExplanation}
+                title={
+                    <div className="flex items-center justify-between w-full">
+                        <span>{t.simpleExplanation}</span>
+                        <CollapseToggle
+                            isCollapsed={collapsedSections.explanation}
+                            onToggle={() => toggleSection('explanation')}
+                            ariaLabel="Toggle explanation"
+                        />
+                    </div>
+                }
                 accentColor="pink"
                 icon={
                     <svg
@@ -90,12 +188,25 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <p className="text-base leading-relaxed">{result.explanation}</p>
+                {!collapsedSections.explanation && (
+                    <ExpandableText text={result.explanation} accentColor="pink" />
+                )}
             </ResultCard>
+            </div>
 
             {/* Reading Time Card */}
+            <div id="stats-section">
             <ResultCard
-                title={t.readingTimeStats}
+                title={
+                    <div className="flex items-center justify-between w-full">
+                        <span>{t.readingTimeStats}</span>
+                        <CollapseToggle
+                            isCollapsed={collapsedSections.stats}
+                            onToggle={() => toggleSection('stats')}
+                            ariaLabel="Toggle stats"
+                        />
+                    </div>
+                }
                 accentColor="green"
                 icon={
                     <svg
@@ -113,56 +224,111 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <div className="grid md:grid-cols-3 gap-6">
-                    <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-6 rounded-xl border border-green-200/50 dark:border-green-800/50">
-                        <div className="relative z-10">
-                            <div className="flex items-baseline gap-3 mb-2">
-                                <span className="text-5xl font-black bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
-                                    {result.readingTime}
-                                </span>
-                                <span className="text-xl font-semibold text-green-700 dark:text-green-300">
-                                    {result.readingTime === 1 ? t.minute : t.minutes}
-                                </span>
-                            </div>
-                            <p className="text-sm font-medium text-green-600 dark:text-green-400">
-                                {t.estimatedReadingTime}
-                            </p>
-                        </div>
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-green-400/20 dark:bg-green-600/20 rounded-full blur-2xl"></div>
+                {!collapsedSections.stats && (
+                <div className="space-y-6">
+                    {/* First Row - Main Stats */}
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <StatCard
+                            value={result.readingTime}
+                            unit={result.readingTime === 1 ? t.minute : t.minutes}
+                            label={t.estimatedReadingTime}
+                            gradient="from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20"
+                            textGradient="from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
+                            borderColor="border-green-200/50 dark:border-green-800/50"
+                            glowColor="bg-green-400/20 dark:bg-green-600/20"
+                            textColor="text-green-600 dark:text-green-400"
+                        />
+                        
+                        <StatCard
+                            value={result.wordCount}
+                            unit={result.wordCount === 1 ? t.word : t.words}
+                            label={t.totalWordCount}
+                            gradient="from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20"
+                            textGradient="from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400"
+                            borderColor="border-emerald-200/50 dark:border-emerald-800/50"
+                            glowColor="bg-emerald-400/20 dark:bg-emerald-600/20"
+                            textColor="text-emerald-600 dark:text-emerald-400"
+                        />
+                        
+                        <StatCard
+                            value={result.readingLevel}
+                            label="Reading Level"
+                            gradient="from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20"
+                            textGradient="from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400"
+                            borderColor="border-teal-200/50 dark:border-teal-800/50"
+                            glowColor="bg-teal-400/20 dark:bg-teal-600/20"
+                            textColor="text-teal-600 dark:text-teal-400"
+                            size="sm"
+                        />
                     </div>
                     
-                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 rounded-xl border border-emerald-200/50 dark:border-emerald-800/50">
-                        <div className="relative z-10">
-                            <div className="flex items-baseline gap-3 mb-2">
-                                <span className="text-5xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
-                                    {result.wordCount.toLocaleString()}
-                                </span>
-                                <span className="text-xl font-semibold text-emerald-700 dark:text-emerald-300">
-                                    {result.wordCount === 1 ? t.word : t.words}
-                                </span>
-                            </div>
-                            <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
-                                {t.totalWordCount}
+                    {/* Second Row - Additional Stats */}
+                    <div className="grid md:grid-cols-4 gap-6">
+                        <StatCard
+                            value={result.speakingTime}
+                            unit="min"
+                            label="Speaking Time"
+                            gradient="from-cyan-50 to-blue-50 dark:from-cyan-950/20 dark:to-blue-950/20"
+                            textGradient="from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400"
+                            borderColor="border-cyan-200/50 dark:border-cyan-800/50"
+                            glowColor="bg-cyan-400/20 dark:bg-cyan-600/20"
+                            textColor="text-cyan-600 dark:text-cyan-400"
+                            size="sm"
+                        />
+                        
+                        <StatCard
+                            value={result.uniqueWords}
+                            label="Unique Words"
+                            gradient="from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20"
+                            textGradient="from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
+                            borderColor="border-blue-200/50 dark:border-blue-800/50"
+                            glowColor="bg-blue-400/20 dark:bg-blue-600/20"
+                            textColor="text-blue-600 dark:text-blue-400"
+                            size="sm"
+                        />
+                        
+                        <StatCard
+                            value={result.averageSentenceLength}
+                            unit="words"
+                            label="Avg Sentence"
+                            gradient="from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20"
+                            textGradient="from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400"
+                            borderColor="border-indigo-200/50 dark:border-indigo-800/50"
+                            glowColor="bg-indigo-400/20 dark:bg-indigo-600/20"
+                            textColor="text-indigo-600 dark:text-indigo-400"
+                            size="sm"
+                        />
+                        
+                        <StatCard
+                            gradient="from-purple-50 to-fuchsia-50 dark:from-purple-950/20 dark:to-fuchsia-950/20"
+                            textGradient="from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400"
+                            borderColor="border-purple-200/50 dark:border-purple-800/50"
+                            glowColor="bg-purple-400/20 dark:bg-purple-600/20"
+                            textColor="text-purple-600 dark:text-purple-400"
+                            value=""
+                            label=""
+                        >
+                            <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-3">
+                                Top Words
                             </p>
-                        </div>
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-400/20 dark:bg-emerald-600/20 rounded-full blur-2xl"></div>
-                    </div>
-                    
-                    <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 p-6 rounded-xl border border-teal-200/50 dark:border-teal-800/50">
-                        <div className="relative z-10">
-                            <div className="mb-2">
-                                <span className="text-2xl font-black bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent block leading-tight">
-                                    {result.readingLevel}
-                                </span>
+                            <div className="space-y-1">
+                                {result.topWords.slice(0, 3).map((item, idx) => (
+                                    <div key={idx} className="flex items-center justify-between text-xs">
+                                        <span className="font-medium text-purple-700 dark:text-purple-300 truncate max-w-[80px]">
+                                            {item.word}
+                                        </span>
+                                        <span className="text-purple-600 dark:text-purple-400 font-bold">
+                                            {item.count}×
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
-                            <p className="text-sm font-medium text-teal-600 dark:text-teal-400">
-                                Reading Level
-                            </p>
-                        </div>
-                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-teal-400/20 dark:bg-teal-600/20 rounded-full blur-2xl"></div>
+                        </StatCard>
                     </div>
                 </div>
+                )}
             </ResultCard>
+            </div>
         </div>
     );
 }

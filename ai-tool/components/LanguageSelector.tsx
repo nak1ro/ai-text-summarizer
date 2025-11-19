@@ -37,12 +37,12 @@ export function LanguageSelector() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="group p-3 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center gap-2 shadow-sm hover:shadow-md"
+                className="group px-4 w-14 py-3 h-12 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center shadow-sm hover:shadow-md text-zinc-700 dark:text-zinc-300 relative overflow-hidden"
                 aria-label="Select language"
             >
                 <span className="text-xl group-hover:scale-110 transition-transform duration-300">{languageFlags[language]}</span>
                 <svg
-                    className={`w-4 h-4 text-zinc-600 dark:text-zinc-400 transition-transform duration-300 ${
+                    className={`absolute bottom-0.5 right-0.5 w-3 h-3 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
                         isOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -52,7 +52,7 @@ export function LanguageSelector() {
                     <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
+                        strokeWidth={2.5}
                         d="M19 9l-7 7-7-7"
                     />
                 </svg>

@@ -7,6 +7,10 @@ import { formatCount } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Button } from '@/components/shared/Button';
+import { ExtractedTextPreview } from '@/components/shared/ExtractedTextPreview';
+import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
+import { IconButton } from '@/components/shared/IconButton';
 
 const MAX_CHARS = 50000;
 
@@ -543,26 +547,29 @@ export default function Home() {
                   alt="Preview"
                   className="max-w-full max-h-64 rounded-2xl border-2 border-zinc-300 dark:border-zinc-700 shadow-lg transition-transform duration-300 group-hover:scale-[1.02]"
                 />
-                <button
+                <IconButton
                   onClick={handleRemoveImage}
                   disabled={loading}
-                  className="absolute top-3 right-3 p-2.5 bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 hover:scale-110"
+                  variant="danger"
+                  size="sm"
+                  className="absolute top-3 right-3 hover:scale-110"
                   title="Remove image"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
+                  icon={
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  }
+                />
               </div>
               {extractedText && (
                 <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
@@ -668,18 +675,7 @@ export default function Home() {
                     </button>
                   </div>
                   {extractedText && (
-                    <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
-                      <p className="text-sm font-bold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        {t.extractedText}
-                      </p>
-                      <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
-                        {extractedText.substring(0, 200)}
-                        {extractedText.length > 200 ? '...' : ''}
-                      </p>
-                    </div>
+                    <ExtractedTextPreview text={extractedText} title={t.extractedText} />
                   )}
                 </div>
               )}
@@ -705,18 +701,7 @@ export default function Home() {
                 disabled={loading}
               />
               {extractedText && (
-                <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
-                  <p className="text-sm font-bold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    {t.extractedText}
-                  </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
-                    {extractedText.substring(0, 200)}
-                    {extractedText.length > 200 ? '...' : ''}
-                  </p>
-                </div>
+                <ExtractedTextPreview text={extractedText} title={t.extractedText} />
               )}
             </div>
           )}
@@ -743,7 +728,7 @@ export default function Home() {
               </div>
             )}
             {inputMode !== 'text' && <div />}
-              <button
+              <Button
                 onClick={handleAnalyze}
                 disabled={
                   loading || 
@@ -752,34 +737,10 @@ export default function Home() {
                   (inputMode === 'document' && !documentFile) ||
                   (inputMode === 'youtube' && !youtubeUrl.trim())
                 }
-                className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-zinc-300 disabled:to-zinc-300 dark:disabled:from-zinc-700 dark:disabled:to-zinc-700 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 disabled:shadow-none disabled:scale-100 flex items-center gap-2.5"
-              >
-              {loading ? (
-                <>
-                  <svg
-                    className="animate-spin h-5 w-5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  {t.analyzing}
-                </>
-              ) : (
-                <>
+                variant="primary"
+                size="lg"
+                loading={loading}
+                icon={!loading ? (
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -793,10 +754,10 @@ export default function Home() {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  {t.analyze}
-                </>
-              )}
-            </button>
+                ) : undefined}
+              >
+                {loading ? t.analyzing : t.analyze}
+              </Button>
           </div>
 
           {inputMode === 'text' && (

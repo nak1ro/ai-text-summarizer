@@ -6,6 +6,10 @@ export interface AnalysisResult {
   readingTime: number; // in minutes
   wordCount: number; // total words in the text
   readingLevel: string; // e.g., "7th grade (easy to understand)"
+  speakingTime: number; // estimated speaking time in minutes
+  uniqueWords: number; // count of unique words
+  averageSentenceLength: number; // average words per sentence
+  topWords: Array<{word: string; count: number}>; // most frequent words
 }
 
 // API request body

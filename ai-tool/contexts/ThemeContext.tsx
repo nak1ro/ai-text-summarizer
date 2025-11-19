@@ -17,14 +17,23 @@ export function ThemeProvider({children}: {children: React.ReactNode}) {
 
     useEffect(() => {
         setMounted(true);
-        // Check localStorage first, then system preference
         if (typeof window !== 'undefined') {
             const savedTheme = localStorage.getItem('theme') as Theme | null;
             if (savedTheme) {
                 setTheme(savedTheme);
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             } else {
                 const systemPreference = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
                 setTheme(systemPreference);
+                if (systemPreference === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             }
         }
     }, []);
