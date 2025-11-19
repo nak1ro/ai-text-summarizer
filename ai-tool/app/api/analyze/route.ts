@@ -2,7 +2,7 @@ import {NextRequest, NextResponse} from 'next/server';
 import OpenAI from 'openai';
 import axios from 'axios';
 import mammoth from 'mammoth';
-import {AnalyzeRequest, AnalyzeResponse, AnalysisResult} from '@/types';
+import {AnalyzeRequest, AnalyzeResponse, AnalysisResult, SummaryLength, AnalysisStyle} from '@/types';
 import {
     calculateReadingTime,
     calculateSpeakingTime,
@@ -192,13 +192,41 @@ async function extractImageText(image: string): Promise<string> {
     }
 }
 
-function buildPrompt(text: string): string {
+function buildPrompt(
+    text: string,
+    summaryLength: SummaryLength = 'medium',
+    analysisStyle: AnalysisStyle = 'casual'
+): string {
+    // Summary length instructions
+    const lengthInstructions: Record<SummaryLength, string> = {
+        short: 'Provide a concise, brief summary (2-3 sentences) that captures only the most essential points.',
+        medium: 'Provide a balanced summary (1-2 paragraphs) that captures all major ideas, arguments, and important context.',
+        long: 'Provide a comprehensive, detailed summary (2-3 paragraphs) that thoroughly covers all major points, supporting details, and important nuances.',
+    };
+
+    // Analysis style instructions
+    const styleInstructions: Record<AnalysisStyle, string> = {
+        academic:
+            'Use formal, scholarly language with precise terminology. Structure your analysis using academic conventions. Include appropriate terminology and maintain an objective, analytical tone throughout.',
+        casual:
+            'Use conversational, friendly language that is accessible and easy to understand. Write as if explaining to a friend. Keep it engaging and relatable while maintaining clarity.',
+        technical:
+            'Use professional, precise language with industry-specific terminology where appropriate. Be clear and direct. Focus on accuracy and detail while maintaining clarity for technical audiences.',
+    };
+
+    const lengthInstruction = lengthInstructions[summaryLength];
+    const styleInstruction = styleInstructions[analysisStyle];
+
     return `You are an AI text analysis assistant. Your task is to analyze the user's input text and return all results strictly in the JSON structure described below.
 
+ANALYSIS SETTINGS:
+- Summary Length: ${summaryLength} - ${lengthInstruction}
+- Analysis Style: ${analysisStyle} - ${styleInstruction}
+
 Your goals:
-1. Provide a detailed and complete summary that captures all major ideas, arguments, and important context from the text. The summary should be fuller and more informative than a minimal short summary, while still staying clear and focused.
-2. Extract the most important key points as bullet list items.
-3. Give a simple, easy-to-understand explanation of the text, written in plain language so that anyone can understand it.
+1. Provide a summary that follows the ${summaryLength} length requirement: ${lengthInstruction}
+2. Extract the most important key points as bullet list items. Adjust the depth and number of key points based on the summary length.
+3. Give a simple, easy-to-understand explanation of the text using the ${analysisStyle} style: ${styleInstruction}
 4. Estimate the reading time in minutes (round up to the nearest whole number).
 5. Perform a comprehensive reading complexity analysis:
    - Assess sentence structure complexity (simple, compound, complex sentences)
@@ -208,12 +236,18 @@ Your goals:
    - Determine appropriate grade level based on Flesch-Kincaid scale
    - Provide format: "Grade level (descriptor)" where descriptor indicates difficulty
 
+IMPORTANT STYLE REQUIREMENTS:
+- Follow the ${analysisStyle} analysis style throughout: ${styleInstruction}
+- The summary must be ${summaryLength} length as specified
+- All output (summary, key points, explanation) should consistently reflect the ${analysisStyle} tone and style
+- For academic style: use formal language, proper terminology, objective tone
+- For casual style: use friendly, conversational language, relatable examples
+- For technical style: use precise, professional language, industry terminology
+
 Follow these rules:
 - The output MUST be valid JSON.
 - DO NOT include text outside the JSON object.
 - DO NOT use markdown formatting inside the JSON.
-- The summary should be well-developed but not overly long.
-- The explanation must remain simple and beginner-friendly.
 - Key points must be a clean array of strings.
 - For reading_time_minutes, output only a number.
 - For reading_level, analyze sentence structure, vocabulary, and conceptual complexity to determine accurate grade level
@@ -228,7 +262,7 @@ Expected JSON structure:
   "reading_level": "7th grade (easy to understand)"
 }
 
-Now analyze the following text:
+Now analyze the following text using the specified settings:
 
 ${text}`;
 }
@@ -273,6 +307,8 @@ export async function POST(request: NextRequest) {
             document,
             documentName,
             youtubeUrl,
+            summaryLength = 'medium',
+            analysisStyle = 'casual',
         } = body;
 
         let text = inputText ?? '';
@@ -306,7 +342,7 @@ export async function POST(request: NextRequest) {
 
         requireEnvVar('OPENAI_API_KEY');
 
-        const prompt = buildPrompt(text);
+        const prompt = buildPrompt(text, summaryLength, analysisStyle);
 
         const completion = await openai.chat.completions.create({
             model: 'gpt-4o-mini',

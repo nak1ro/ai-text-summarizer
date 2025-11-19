@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AnalysisResult } from '@/types';
+import { AnalysisResult, AnalysisSettings } from '@/types';
 import { AnalysisResults } from '@/components/AnalysisResults';
 import { formatCount } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
@@ -14,6 +14,7 @@ import { IconButton } from '@/components/shared/IconButton';
 import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { ValidationError, FileError } from '@/lib/errors';
 import { ERROR_MESSAGES } from '@/lib/errorMessages';
+import { AnalysisSettings as AnalysisSettingsComponent } from '@/components/AnalysisSettings';
 
 const MAX_CHARS = 50000;
 
@@ -48,6 +49,10 @@ export default function Home() {
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const [isDraggingDocument, setIsDraggingDocument] = useState(false);
+  const [analysisSettings, setAnalysisSettings] = useState<AnalysisSettings>({
+    summaryLength: 'medium',
+    analysisStyle: 'casual',
+  });
   
   // Get current mode's result and extracted text
   const result = results[inputMode];
@@ -279,7 +284,18 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const requestBody: { text?: string; image?: string; document?: string; documentName?: string; youtubeUrl?: string } = {};
+      const requestBody: {
+        text?: string;
+        image?: string;
+        document?: string;
+        documentName?: string;
+        youtubeUrl?: string;
+        summaryLength?: string;
+        analysisStyle?: string;
+      } = {
+        summaryLength: analysisSettings.summaryLength,
+        analysisStyle: analysisSettings.analysisStyle,
+      };
       
       if (youtubeUrl.trim() && inputMode === 'youtube') {
         requestBody.youtubeUrl = youtubeUrl.trim();
@@ -714,6 +730,13 @@ export default function Home() {
               )}
             </div>
           )}
+
+          {/* Analysis Settings */}
+          <AnalysisSettingsComponent
+            settings={analysisSettings}
+            onSettingsChange={setAnalysisSettings}
+            disabled={loading}
+          />
 
           {/* Character Counter and Analyze Button */}
           <div className="flex items-center justify-between mb-4">

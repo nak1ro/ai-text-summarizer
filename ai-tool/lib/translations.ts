@@ -40,6 +40,11 @@ export const translations = {
         analyze: 'Analyze',
         analyzing: 'Analyzing...',
         
+        // Analysis Settings
+        analysisSettings: 'Analysis Settings',
+        summaryLength: 'Summary Length',
+        analysisStyle: 'Analysis Style',
+        
         // Tips
         tipCtrlEnter: 'Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze',
         tipCtrlV: 'Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard',
@@ -107,6 +112,11 @@ export const translations = {
         // Actions
         analyze: 'Analizar',
         analyzing: 'Analizando...',
+        
+        // Analysis Settings
+        analysisSettings: 'Configuración de Análisis',
+        summaryLength: 'Longitud del Resumen',
+        analysisStyle: 'Estilo de Análisis',
         
         // Tips
         tipCtrlEnter: 'Consejo: Presione Ctrl+Enter (Cmd+Enter en Mac) para analizar',
@@ -176,6 +186,11 @@ export const translations = {
         analyze: 'Analysieren',
         analyzing: 'Analysiere...',
         
+        // Analysis Settings
+        analysisSettings: 'Analyseeinstellungen',
+        summaryLength: 'Zusammenfassungslänge',
+        analysisStyle: 'Analysestil',
+        
         // Tips
         tipCtrlEnter: 'Tipp: Drücken Sie Strg+Enter (Cmd+Enter auf Mac) zum Analysieren',
         tipCtrlV: 'Tipp: Drücken Sie Strg+V (Cmd+V auf Mac), um ein Bild aus der Zwischenablage einzufügen',
@@ -244,6 +259,11 @@ export const translations = {
         analyze: 'Analyser',
         analyzing: 'Analyse en cours...',
         
+        // Analysis Settings
+        analysisSettings: 'Paramètres d\'Analyse',
+        summaryLength: 'Longueur du Résumé',
+        analysisStyle: 'Style d\'Analyse',
+        
         // Tips
         tipCtrlEnter: 'Astuce: Appuyez sur Ctrl+Entrée (Cmd+Entrée sur Mac) pour analyser',
         tipCtrlV: 'Astuce: Appuyez sur Ctrl+V (Cmd+V sur Mac) pour coller une image du presse-papiers',
@@ -311,6 +331,11 @@ export const translations = {
         // Actions
         analyze: 'Analizuj',
         analyzing: 'Analizowanie...',
+        
+        // Analysis Settings
+        analysisSettings: 'Ustawienia Analizy',
+        summaryLength: 'Długość Podsumowania',
+        analysisStyle: 'Styl Analizy',
         
         // Tips
         tipCtrlEnter: 'Wskazówka: Naciśnij Ctrl+Enter (Cmd+Enter na Mac), aby analizować',

@@ -12,6 +12,15 @@ export interface AnalysisResult {
   topWords: Array<{word: string; count: number}>; // most frequent words
 }
 
+// Analysis settings
+export type SummaryLength = 'short' | 'medium' | 'long';
+export type AnalysisStyle = 'academic' | 'casual' | 'technical';
+
+export interface AnalysisSettings {
+  summaryLength: SummaryLength;
+  analysisStyle: AnalysisStyle;
+}
+
 // API request body
 export interface AnalyzeRequest {
   text?: string;
@@ -19,6 +28,8 @@ export interface AnalyzeRequest {
   document?: string; // Base64 encoded document
   documentName?: string; // Original filename with extension
   youtubeUrl?: string; // YouTube video URL
+  summaryLength?: SummaryLength;
+  analysisStyle?: AnalysisStyle;
 }
 
 // API response
