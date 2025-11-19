@@ -10,7 +10,6 @@ import {ExpandableText} from './shared/ExpandableText';
 import {StatCard} from './shared/StatCard';
 import {TopWordsModal} from './shared/TopWordsModal';
 import {CopyButton} from './shared/CopyButton';
-import {Toast} from './shared/Toast';
 import {ReadingComplexityChart} from './shared/ReadingComplexityChart';
 
 interface AnalysisResultsProps {
@@ -31,10 +30,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
     // State for top words modal
     const [isTopWordsModalOpen, setIsTopWordsModalOpen] = useState(false);
     
-    // State for toast
-    const [toastMessage, setToastMessage] = useState<string>('');
-    const [showToast, setShowToast] = useState(false);
-    
     const toggleSection = (section: string) => {
         setCollapsedSections(prev => ({
             ...prev,
@@ -48,11 +43,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
-
-    const showCopyToast = (itemName: string) => {
-        setToastMessage(`${itemName} ${t.copied || 'copied to clipboard!'}`);
-        setShowToast(true);
-    };
     
     return (
         <div className="w-full max-w-5xl mx-auto space-y-6 animate-fadeIn">
@@ -62,31 +52,31 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
-                    <span>Quick Navigation</span>
+                    <span>{t.quickNavigation}</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
                     <NavigationButton
                         onClick={() => scrollToSection('summary-section')}
                         emoji="📝"
-                        label="Summary"
+                        label={t.summary}
                         color="blue"
                     />
                     <NavigationButton
                         onClick={() => scrollToSection('keypoints-section')}
                         emoji="📋"
-                        label="Key Points"
+                        label={t.keyPoints}
                         color="purple"
                     />
                     <NavigationButton
                         onClick={() => scrollToSection('explanation-section')}
                         emoji="💡"
-                        label="Explanation"
+                        label={t.explanation}
                         color="pink"
                     />
                     <NavigationButton
                         onClick={() => scrollToSection('stats-section')}
                         emoji="📊"
-                        label="Stats"
+                        label={t.stats}
                         color="green"
                     />
                 </div>
@@ -103,7 +93,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             text={result.summary}
                             label={t.copy || 'Copy'}
                             className="!p-2"
-                            onCopy={() => showCopyToast(t.summary)}
                         />
                         <CollapseToggle
                             isCollapsed={collapsedSections.summary}
@@ -145,7 +134,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             text={result.keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
                             label={t.copy || 'Copy'}
                             className="!p-2"
-                            onCopy={() => showCopyToast(t.keyPoints)}
                         />
                         <CollapseToggle
                             isCollapsed={collapsedSections.keyPoints}
@@ -197,7 +185,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             text={result.explanation}
                             label={t.copy || 'Copy'}
                             className="!p-2"
-                            onCopy={() => showCopyToast(t.simpleExplanation)}
                         />
                         <CollapseToggle
                             isCollapsed={collapsedSections.explanation}
@@ -294,8 +281,8 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     <div className="grid md:grid-cols-4 gap-6">
                         <StatCard
                             value={result.speakingTime}
-                            unit="min"
-                            label="Speaking Time"
+                            unit={t.minutes}
+                            label={t.speakingTime}
                             gradient="from-cyan-50 to-blue-50 dark:from-cyan-950/20 dark:to-blue-950/20"
                             textGradient="from-cyan-600 to-blue-600 dark:from-cyan-400 dark:to-blue-400"
                             borderColor="border-cyan-200/50 dark:border-cyan-800/50"
@@ -306,7 +293,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                         
                         <StatCard
                             value={result.uniqueWords}
-                            label="Unique Words"
+                            label={t.uniqueWords}
                             gradient="from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20"
                             textGradient="from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400"
                             borderColor="border-blue-200/50 dark:border-blue-800/50"
@@ -317,8 +304,8 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                         
                         <StatCard
                             value={result.averageSentenceLength}
-                            unit="words"
-                            label="Avg Sentence"
+                            unit={t.words}
+                            label={t.avgSentence}
                             gradient="from-indigo-50 to-purple-50 dark:from-indigo-950/20 dark:to-purple-950/20"
                             textGradient="from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400"
                             borderColor="border-indigo-200/50 dark:border-indigo-800/50"
@@ -351,7 +338,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             >
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
-                                        Top Words
+                                        {t.topWords}
                                     </p>
                                     <svg className="w-4 h-4 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -384,12 +371,6 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 topWords={result.topWords}
             />
 
-            {/* Toast Notification */}
-            <Toast
-                message={toastMessage || t.copied || 'Copied to clipboard!'}
-                isVisible={showToast}
-                onClose={() => setShowToast(false)}
-            />
         </div>
     );
 }

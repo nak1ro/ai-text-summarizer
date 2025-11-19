@@ -5,7 +5,7 @@ import { AnalysisHistoryEntry, InputMode } from '@/types';
 import { useTranslation } from '@/hooks/useTranslation';
 
 // Simple relative time formatter
-function formatRelativeTime(timestamp: number): string {
+function formatRelativeTime(timestamp: number, t: any): string {
   const now = Date.now();
   const diff = now - timestamp;
   const seconds = Math.floor(diff / 1000);
@@ -13,10 +13,13 @@ function formatRelativeTime(timestamp: number): string {
   const hours = Math.floor(minutes / 60);
   const days = Math.floor(hours / 24);
 
-  if (seconds < 60) return 'just now';
-  if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-  if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
-  if (days < 7) return `${days} day${days > 1 ? 's' : ''} ago`;
+  if (seconds < 60) return t.justNow;
+  if (minutes === 1) return t.minuteAgo;
+  if (minutes < 60) return `${minutes} ${t.minutesAgo}`;
+  if (hours === 1) return t.hourAgo;
+  if (hours < 24) return `${hours} ${t.hoursAgo}`;
+  if (days === 1) return t.dayAgo;
+  if (days < 7) return `${days} ${t.daysAgo}`;
   
   const date = new Date(timestamp);
   return date.toLocaleDateString();
@@ -61,7 +64,7 @@ const getInputModeIcon = (mode: InputMode) => {
   }
 };
 
-const getInputPreview = (entry: AnalysisHistoryEntry): string => {
+const getInputPreview = (entry: AnalysisHistoryEntry, t: any): string => {
   if (entry.input.text) {
     return entry.input.text.substring(0, 100) + (entry.input.text.length > 100 ? '...' : '');
   }
@@ -72,9 +75,9 @@ const getInputPreview = (entry: AnalysisHistoryEntry): string => {
     return entry.input.youtubeUrl;
   }
   if (entry.input.imagePreview) {
-    return 'Image';
+    return t.imageText;
   }
-  return 'No preview available';
+  return t.noPreviewAvailable;
 };
 
 export function AnalysisHistory({
@@ -152,14 +155,14 @@ export function AnalysisHistory({
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 capitalize">
-                              {entry.inputMode} Mode
+                              {entry.inputMode} {t.mode}
                             </span>
                             <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                              {formatRelativeTime(entry.timestamp)}
+                              {formatRelativeTime(entry.timestamp, t)}
                             </span>
                           </div>
                           <p className="text-sm text-zinc-600 dark:text-zinc-400 truncate">
-                            {getInputPreview(entry)}
+                            {getInputPreview(entry, t)}
                           </p>
                         </div>
                       </div>

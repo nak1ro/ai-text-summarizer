@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnalysisResult, AnalysisSettings } from '@/types';
 import { AnalysisResults } from '@/components/AnalysisResults';
 import { formatCount } from '@/lib/utils';
@@ -59,6 +59,19 @@ export default function Home() {
   });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { history, addToHistory, removeFromHistory, clearHistory, loadFromHistory } = useAnalysisHistory();
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Detect mobile devices
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // Get current mode's result and extracted text
   const result = results[inputMode];
@@ -850,7 +863,7 @@ export default function Home() {
               </Button>
           </div>
 
-          {inputMode === 'text' && (
+          {inputMode === 'text' && !isMobile && (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
               {t.tipCtrlEnter}
             </p>

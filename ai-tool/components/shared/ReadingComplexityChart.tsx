@@ -1,19 +1,11 @@
 'use client';
 
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ReadingComplexityChartProps {
   readingLevel: string;
 }
-
-// Grade level ranges for Flesch-Kincaid scale
-const GRADE_LEVELS = [
-  { label: 'Elementary', shortLabel: 'Elem', min: 0, max: 5, color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-500/10 dark:bg-green-500/20' },
-  { label: 'Middle School', shortLabel: 'Middle', min: 6, max: 8, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500/10 dark:bg-blue-500/20' },
-  { label: 'High School', shortLabel: 'High', min: 9, max: 12, color: 'from-yellow-500 to-orange-500', bgColor: 'bg-orange-500/10 dark:bg-orange-500/20' },
-  { label: 'College', shortLabel: 'College', min: 13, max: 16, color: 'from-orange-500 to-red-500', bgColor: 'bg-red-500/10 dark:bg-red-500/20' },
-  { label: 'Graduate', shortLabel: 'Grad', min: 17, max: 20, color: 'from-red-600 to-purple-600', bgColor: 'bg-purple-500/10 dark:bg-purple-500/20' },
-];
 
 // Parse reading level string to extract numeric grade
 function parseReadingLevel(readingLevel: string): { grade: number; description: string } {
@@ -59,17 +51,48 @@ function parseReadingLevel(readingLevel: string): { grade: number; description: 
 }
 
 // Get the grade level category
-function getGradeCategory(grade: number) {
-  if (grade <= 5) return GRADE_LEVELS[0];
-  if (grade <= 8) return GRADE_LEVELS[1];
-  if (grade <= 12) return GRADE_LEVELS[2];
-  if (grade <= 16) return GRADE_LEVELS[3];
-  return GRADE_LEVELS[4];
+function getGradeCategory(grade: number, levels: any[]) {
+  if (grade <= 5) return levels[0];
+  if (grade <= 8) return levels[1];
+  if (grade <= 12) return levels[2];
+  if (grade <= 16) return levels[3];
+  return levels[4];
 }
 
 export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartProps) {
+  const { t } = useTranslation();
   const { grade, description } = parseReadingLevel(readingLevel);
-  const category = getGradeCategory(grade);
+  
+  // Translate common descriptors in the reading level description
+  const translateDescription = (desc: string): string => {
+    let translated = desc;
+    
+    // Replace common English descriptors with translated ones
+    translated = translated.replace(/easy to understand/gi, t.easyToUnderstand);
+    translated = translated.replace(/moderate/gi, t.moderate);
+    translated = translated.replace(/advanced/gi, t.advanced);
+    translated = translated.replace(/highly technical/gi, t.highlyTechnical);
+    translated = translated.replace(/very simple/gi, t.verySimple);
+    translated = translated.replace(/accessible/gi, t.accessible);
+    translated = translated.replace(/challenging/gi, t.challenging);
+    translated = translated.replace(/\bgrade\b/gi, t.grade);
+    translated = translated.replace(/\blevel\b/gi, t.level);
+    
+    return translated;
+  };
+  
+  const translatedDescription = translateDescription(description);
+  
+  // Grade level ranges for Flesch-Kincaid scale with translations
+  const GRADE_LEVELS = [
+    { label: t.elementary, shortLabel: t.elemShort, min: 0, max: 5, color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-500/10 dark:bg-green-500/20' },
+    { label: t.middleSchool, shortLabel: t.middleShort, min: 6, max: 8, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500/10 dark:bg-blue-500/20' },
+    { label: t.highSchool, shortLabel: t.highShort, min: 9, max: 12, color: 'from-yellow-500 to-orange-500', bgColor: 'bg-orange-500/10 dark:bg-orange-500/20' },
+    { label: t.college, shortLabel: t.college, min: 13, max: 16, color: 'from-orange-500 to-red-500', bgColor: 'bg-red-500/10 dark:bg-red-500/20' },
+    { label: t.graduate, shortLabel: t.gradShort, min: 17, max: 20, color: 'from-red-600 to-purple-600', bgColor: 'bg-purple-500/10 dark:bg-purple-500/20' },
+  ];
+  
+  const category = getGradeCategory(grade, GRADE_LEVELS);
   const maxGrade = 20;
   const percentage = Math.min((grade / maxGrade) * 100, 100);
 
@@ -79,7 +102,7 @@ export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartP
         {/* Header */}
         <div>
           <h3 className="text-base font-bold text-teal-700 dark:text-teal-300">
-            Reading Complexity
+            {t.readingComplexity}
           </h3>
         </div>
 
@@ -120,7 +143,7 @@ export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartP
         {/* Description */}
         <div className="text-center pt-2 border-t border-zinc-200/50 dark:border-zinc-700/50">
           <p className="text-sm text-zinc-600 dark:text-zinc-400 font-medium leading-relaxed">
-            {description}
+            {translatedDescription}
           </p>
         </div>
 

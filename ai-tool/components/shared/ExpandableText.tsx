@@ -4,6 +4,7 @@
  */
 
 import React, { useState } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface ExpandableTextProps {
   text: string;
@@ -12,6 +13,7 @@ interface ExpandableTextProps {
 }
 
 export function ExpandableText({ text, limit = 300, accentColor = 'blue' }: ExpandableTextProps) {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
   const shouldTruncate = text.length > limit;
   
@@ -34,14 +36,14 @@ export function ExpandableText({ text, limit = 300, accentColor = 'blue' }: Expa
       <div className={`mt-3 text-sm font-medium ${colors[accentColor]} flex items-center gap-1 transition-colors duration-200`}>
         {isExpanded ? (
           <>
-            <span>Click to show less</span>
+            <span>{t.clickToShowLess}</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
             </svg>
           </>
         ) : (
           <>
-            <span>Click to show more</span>
+            <span>{t.clickToShowMore}</span>
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>

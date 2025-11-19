@@ -90,17 +90,75 @@ export const translations = {
         summary: 'Summary',
         keyPoints: 'Key Points',
         simpleExplanation: 'Simple Explanation',
+        explanation: 'Explanation',
+        stats: 'Stats',
         readingTimeStats: 'Reading Time & Stats',
         estimatedReadingTime: 'Estimated reading time',
         totalWordCount: 'Total word count',
+        speakingTime: 'Speaking Time',
+        uniqueWords: 'Unique Words',
+        avgSentence: 'Avg Sentence',
+        topWords: 'Top Words',
         minute: 'minute',
         minutes: 'minutes',
         word: 'word',
         words: 'words',
+        
+        // Quick Navigation
+        quickNavigation: 'Quick Navigation',
+        
+        // Top Words Modal
+        topWordsModalTitle: 'Top 15 Most Used Words',
+        topWordsModalSubtitle: 'Words that appeared more than once',
+        noRepeatedWords: 'No repeated words found',
+        allWordsOnce: 'All words appear only once in the text',
+        
+        // Reading Complexity
+        readingComplexity: 'Reading Complexity',
+        elementary: 'Elementary',
+        elemShort: 'Elem',
+        middleSchool: 'Middle School',
+        middleShort: 'Middle',
+        highSchool: 'High School',
+        highShort: 'High',
+        college: 'College',
+        graduate: 'Graduate',
+        gradShort: 'Grad',
+        grade: 'grade',
+        level: 'level',
+        
+        // Reading level descriptors
+        easyToUnderstand: 'easy to understand',
+        moderate: 'moderate',
+        advanced: 'advanced',
+        highlyTechnical: 'highly technical',
+        verySimple: 'very simple',
+        accessible: 'accessible',
+        challenging: 'challenging',
+        
+        // Time formatting
+        justNow: 'just now',
+        minuteAgo: 'minute ago',
+        minutesAgo: 'minutes ago',
+        hourAgo: 'hour ago',
+        hoursAgo: 'hours ago',
+        dayAgo: 'day ago',
+        daysAgo: 'days ago',
+        ago: 'ago',
+        
+        // History Modal
+        mode: 'Mode',
+        imageText: 'Image',
+        noPreviewAvailable: 'No preview available',
 
         // Copy actions
         copy: 'Copy',
         copied: 'copied to clipboard!',
+        copiedShort: 'Copied!',
+        
+        // Expandable text
+        clickToShowMore: 'Click to show more',
+        clickToShowLess: 'Click to show less',
 
         // Errors
         error: 'Error',
@@ -204,17 +262,75 @@ export const translations = {
         summary: 'Resumen',
         keyPoints: 'Puntos Clave',
         simpleExplanation: 'Explicación Simple',
+        explanation: 'Explicación',
+        stats: 'Estadísticas',
         readingTimeStats: 'Tiempo de Lectura y Estadísticas',
         estimatedReadingTime: 'Tiempo estimado de lectura',
         totalWordCount: 'Recuento total de palabras',
+        speakingTime: 'Tiempo de Habla',
+        uniqueWords: 'Palabras Únicas',
+        avgSentence: 'Oración Prom.',
+        topWords: 'Palabras Principales',
         minute: 'minuto',
         minutes: 'minutos',
         word: 'palabra',
         words: 'palabras',
+        
+        // Quick Navigation
+        quickNavigation: 'Navegación Rápida',
+        
+        // Top Words Modal
+        topWordsModalTitle: 'Las 15 Palabras Más Usadas',
+        topWordsModalSubtitle: 'Palabras que aparecieron más de una vez',
+        noRepeatedWords: 'No se encontraron palabras repetidas',
+        allWordsOnce: 'Todas las palabras aparecen solo una vez en el texto',
+        
+        // Reading Complexity
+        readingComplexity: 'Complejidad de Lectura',
+        elementary: 'Elemental',
+        elemShort: 'Elem',
+        middleSchool: 'Secundaria',
+        middleShort: 'Secund',
+        highSchool: 'Preparatoria',
+        highShort: 'Prep',
+        college: 'Universidad',
+        graduate: 'Posgrado',
+        gradShort: 'Posg',
+        grade: 'grado',
+        level: 'nivel',
+        
+        // Reading level descriptors
+        easyToUnderstand: 'fácil de entender',
+        moderate: 'moderado',
+        advanced: 'avanzado',
+        highlyTechnical: 'altamente técnico',
+        verySimple: 'muy simple',
+        accessible: 'accesible',
+        challenging: 'desafiante',
+        
+        // Time formatting
+        justNow: 'justo ahora',
+        minuteAgo: 'hace un minuto',
+        minutesAgo: 'minutos atrás',
+        hourAgo: 'hace una hora',
+        hoursAgo: 'horas atrás',
+        dayAgo: 'hace un día',
+        daysAgo: 'días atrás',
+        ago: 'atrás',
+        
+        // History Modal
+        mode: 'Modo',
+        imageText: 'Imagen',
+        noPreviewAvailable: 'Vista previa no disponible',
 
         // Copy actions
         copy: 'Copiar',
         copied: 'copiado al portapapeles!',
+        copiedShort: '¡Copiado!',
+        
+        // Expandable text
+        clickToShowMore: 'Haz clic para mostrar más',
+        clickToShowLess: 'Haz clic para mostrar menos',
 
         // Errors
         error: 'Error',
@@ -318,17 +434,75 @@ export const translations = {
         summary: 'Zusammenfassung',
         keyPoints: 'Hauptpunkte',
         simpleExplanation: 'Einfache Erklärung',
+        explanation: 'Erklärung',
+        stats: 'Statistiken',
         readingTimeStats: 'Lesezeit & Statistiken',
         estimatedReadingTime: 'Geschätzte Lesezeit',
         totalWordCount: 'Gesamtwortanzahl',
+        speakingTime: 'Sprechzeit',
+        uniqueWords: 'Einzigartige Wörter',
+        avgSentence: 'Durchschn. Satz',
+        topWords: 'Häufigste Wörter',
         minute: 'Minute',
         minutes: 'Minuten',
         word: 'Wort',
         words: 'Wörter',
+        
+        // Quick Navigation
+        quickNavigation: 'Schnellnavigation',
+        
+        // Top Words Modal
+        topWordsModalTitle: 'Top 15 Meistverwendete Wörter',
+        topWordsModalSubtitle: 'Wörter, die mehr als einmal erschienen',
+        noRepeatedWords: 'Keine wiederholten Wörter gefunden',
+        allWordsOnce: 'Alle Wörter erscheinen nur einmal im Text',
+        
+        // Reading Complexity
+        readingComplexity: 'Lesekomplexität',
+        elementary: 'Grundschule',
+        elemShort: 'Grund',
+        middleSchool: 'Mittelschule',
+        middleShort: 'Mittel',
+        highSchool: 'Oberschule',
+        highShort: 'Ober',
+        college: 'Hochschule',
+        graduate: 'Absolvent',
+        gradShort: 'Abs',
+        grade: 'Klasse',
+        level: 'Niveau',
+        
+        // Reading level descriptors
+        easyToUnderstand: 'leicht verständlich',
+        moderate: 'mäßig',
+        advanced: 'fortgeschritten',
+        highlyTechnical: 'hochgradig technisch',
+        verySimple: 'sehr einfach',
+        accessible: 'zugänglich',
+        challenging: 'anspruchsvoll',
+        
+        // Time formatting
+        justNow: 'gerade eben',
+        minuteAgo: 'vor einer Minute',
+        minutesAgo: 'Minuten her',
+        hourAgo: 'vor einer Stunde',
+        hoursAgo: 'Stunden her',
+        dayAgo: 'vor einem Tag',
+        daysAgo: 'Tage her',
+        ago: 'her',
+        
+        // History Modal
+        mode: 'Modus',
+        imageText: 'Bild',
+        noPreviewAvailable: 'Keine Vorschau verfügbar',
 
         // Copy actions
         copy: 'Kopieren',
         copied: 'in die Zwischenablage kopiert!',
+        copiedShort: 'Kopiert!',
+        
+        // Expandable text
+        clickToShowMore: 'Klicken um mehr anzuzeigen',
+        clickToShowLess: 'Klicken um weniger anzuzeigen',
 
         // Errors
         error: 'Fehler',
@@ -432,17 +606,75 @@ export const translations = {
         summary: 'Résumé',
         keyPoints: 'Points Clés',
         simpleExplanation: 'Explication Simple',
+        explanation: 'Explication',
+        stats: 'Statistiques',
         readingTimeStats: 'Temps de Lecture & Statistiques',
         estimatedReadingTime: 'Temps de lecture estimé',
         totalWordCount: 'Nombre total de mots',
+        speakingTime: 'Temps de Parole',
+        uniqueWords: 'Mots Uniques',
+        avgSentence: 'Phrase Moy.',
+        topWords: 'Mots Principaux',
         minute: 'minute',
         minutes: 'minutes',
         word: 'mot',
         words: 'mots',
+        
+        // Quick Navigation
+        quickNavigation: 'Navigation Rapide',
+        
+        // Top Words Modal
+        topWordsModalTitle: 'Top 15 des Mots Les Plus Utilisés',
+        topWordsModalSubtitle: 'Mots apparus plus d\'une fois',
+        noRepeatedWords: 'Aucun mot répété trouvé',
+        allWordsOnce: 'Tous les mots n\'apparaissent qu\'une seule fois dans le texte',
+        
+        // Reading Complexity
+        readingComplexity: 'Complexité de Lecture',
+        elementary: 'Élémentaire',
+        elemShort: 'Élém',
+        middleSchool: 'Collège',
+        middleShort: 'Coll',
+        highSchool: 'Lycée',
+        highShort: 'Lycée',
+        college: 'Université',
+        graduate: 'Diplômé',
+        gradShort: 'Dipl',
+        grade: 'niveau',
+        level: 'niveau',
+        
+        // Reading level descriptors
+        easyToUnderstand: 'facile à comprendre',
+        moderate: 'modéré',
+        advanced: 'avancé',
+        highlyTechnical: 'hautement technique',
+        verySimple: 'très simple',
+        accessible: 'accessible',
+        challenging: 'difficile',
+        
+        // Time formatting
+        justNow: 'à l\'instant',
+        minuteAgo: 'il y a une minute',
+        minutesAgo: 'minutes il y a',
+        hourAgo: 'il y a une heure',
+        hoursAgo: 'heures il y a',
+        dayAgo: 'il y a un jour',
+        daysAgo: 'jours il y a',
+        ago: 'il y a',
+        
+        // History Modal
+        mode: 'Mode',
+        imageText: 'Image',
+        noPreviewAvailable: 'Aucun aperçu disponible',
 
         // Copy actions
         copy: 'Copier',
         copied: 'copié dans le presse-papiers!',
+        copiedShort: 'Copié!',
+        
+        // Expandable text
+        clickToShowMore: 'Cliquez pour afficher plus',
+        clickToShowLess: 'Cliquez pour afficher moins',
 
         // Errors
         error: 'Erreur',
@@ -546,17 +778,75 @@ export const translations = {
         summary: 'Podsumowanie',
         keyPoints: 'Kluczowe Punkty',
         simpleExplanation: 'Proste Wyjaśnienie',
+        explanation: 'Wyjaśnienie',
+        stats: 'Statystyki',
         readingTimeStats: 'Czas Czytania i Statystyki',
         estimatedReadingTime: 'Szacowany czas czytania',
         totalWordCount: 'Całkowita liczba słów',
+        speakingTime: 'Czas Mowy',
+        uniqueWords: 'Unikalne Słowa',
+        avgSentence: 'Średnie Zdanie',
+        topWords: 'Najczęstsze Słowa',
         minute: 'minuta',
         minutes: 'minuty',
         word: 'słowo',
         words: 'słowa',
+        
+        // Quick Navigation
+        quickNavigation: 'Szybka Nawigacja',
+        
+        // Top Words Modal
+        topWordsModalTitle: 'Top 15 Najczęściej Używanych Słów',
+        topWordsModalSubtitle: 'Słowa, które pojawiły się więcej niż raz',
+        noRepeatedWords: 'Nie znaleziono powtarzających się słów',
+        allWordsOnce: 'Wszystkie słowa pojawiają się tylko raz w tekście',
+        
+        // Reading Complexity
+        readingComplexity: 'Złożoność Czytania',
+        elementary: 'Podstawowa',
+        elemShort: 'Podst',
+        middleSchool: 'Gimnazjum',
+        middleShort: 'Gimn',
+        highSchool: 'Liceum',
+        highShort: 'Liceum',
+        college: 'Uczelnia',
+        graduate: 'Absolwent',
+        gradShort: 'Abs',
+        grade: 'klasa',
+        level: 'poziom',
+        
+        // Reading level descriptors
+        easyToUnderstand: 'łatwy do zrozumienia',
+        moderate: 'umiarkowany',
+        advanced: 'zaawansowany',
+        highlyTechnical: 'wysoce techniczny',
+        verySimple: 'bardzo prosty',
+        accessible: 'dostępny',
+        challenging: 'wymagający',
+        
+        // Time formatting
+        justNow: 'przed chwilą',
+        minuteAgo: 'minutę temu',
+        minutesAgo: 'minut temu',
+        hourAgo: 'godzinę temu',
+        hoursAgo: 'godzin temu',
+        dayAgo: 'dzień temu',
+        daysAgo: 'dni temu',
+        ago: 'temu',
+        
+        // History Modal
+        mode: 'Tryb',
+        imageText: 'Obraz',
+        noPreviewAvailable: 'Podgląd niedostępny',
 
         // Copy actions
         copy: 'Kopiuj',
         copied: 'skopiowano do schowka!',
+        copiedShort: 'Skopiowano!',
+        
+        // Expandable text
+        clickToShowMore: 'Kliknij, aby pokazać więcej',
+        clickToShowLess: 'Kliknij, aby pokazać mniej',
 
         // Errors
         error: 'Błąd',

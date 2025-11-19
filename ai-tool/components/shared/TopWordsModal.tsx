@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect } from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface TopWordsModalProps {
   isOpen: boolean;
@@ -12,6 +13,7 @@ interface TopWordsModalProps {
 }
 
 export function TopWordsModal({ isOpen, onClose, topWords }: TopWordsModalProps) {
+  const { t } = useTranslation();
   // Filter out words that appear only once and take top 15
   const filteredWords = topWords.filter(item => item.count > 1).slice(0, 15);
 
@@ -56,10 +58,10 @@ export function TopWordsModal({ isOpen, onClose, topWords }: TopWordsModalProps)
             </div>
             <div>
               <h2 className="text-2xl font-black bg-gradient-to-r from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400 bg-clip-text text-transparent">
-                Top 15 Most Used Words
+                {t.topWordsModalTitle}
               </h2>
               <p className="text-sm text-purple-600 dark:text-purple-400 font-medium">
-                Words that appeared more than once
+                {t.topWordsModalSubtitle}
               </p>
             </div>
           </div>
@@ -89,10 +91,10 @@ export function TopWordsModal({ isOpen, onClose, topWords }: TopWordsModalProps)
                 </svg>
               </div>
               <p className="text-lg font-semibold text-zinc-600 dark:text-zinc-400">
-                No repeated words found
+                {t.noRepeatedWords}
               </p>
               <p className="text-sm text-zinc-500 dark:text-zinc-500 mt-2">
-                All words appear only once in the text
+                {t.allWordsOnce}
               </p>
             </div>
           ) : (

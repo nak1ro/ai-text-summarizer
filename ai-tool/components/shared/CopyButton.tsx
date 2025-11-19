@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
 
 interface CopyButtonProps {
@@ -13,6 +13,18 @@ interface CopyButtonProps {
 export function CopyButton({ text, label, className = '', onCopy }: CopyButtonProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleCopy = async () => {
     try {
@@ -66,7 +78,9 @@ export function CopyButton({ text, label, className = '', onCopy }: CopyButtonPr
               d="M5 13l4 4L19 7"
             />
           </svg>
-          <span className="text-xs font-semibold">{t.copied || 'Copied!'}</span>
+          <span className="text-xs font-semibold">
+            {isMobile ? (t.copiedShort || 'Copied!') : (t.copied || 'Copied to clipboard!')}
+          </span>
         </>
       ) : (
         <>
