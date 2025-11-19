@@ -3,24 +3,162 @@ import OpenAI from 'openai';
 import {AnalyzeRequest, AnalyzeResponse, AnalysisResult} from '@/types';
 import {calculateReadingTime, countWords} from '@/lib/utils';
 import mammoth from 'mammoth';
+import axios from 'axios';
 const {PdfReader} = require('pdfreader');
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-const MAX_CHARS = 5000;
+const MAX_CHARS = 50000;
 
 export async function POST(request: NextRequest) {
     try {
         const body: AnalyzeRequest = await request.json();
-        const {text: inputText, image, document, documentName} = body;
+        const {text: inputText, image, document, documentName, youtubeUrl} = body;
 
         let text = inputText || '';
         let extractedText: string | undefined;
 
+        // If YouTube URL is provided, fetch transcript
+        if (youtubeUrl) {
+            try {
+                // Validate YouTube URL
+                const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+                const match = youtubeUrl.match(youtubeRegex);
+                
+                if (!match) {
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'Invalid YouTube URL. Please provide a valid YouTube video URL.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                const videoId = match[4];
+
+                // Check if SearchAPI key is configured
+                if (!process.env.SEARCHAPI_API_KEY) {
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'SearchAPI key is not configured. Please add SEARCHAPI_API_KEY to your .env file.',
+                        },
+                        {status: 500}
+                    );
+                }
+
+                // Fetch transcript from SearchAPI
+                const searchApiResponse = await axios.get('https://www.searchapi.io/api/v1/search', {
+                    params: {
+                        engine: 'youtube_transcripts',
+                        video_id: videoId,
+                        api_key: process.env.SEARCHAPI_API_KEY,
+                    },
+                    timeout: 30000, // 30 second timeout
+                });
+
+                // Extract transcript text - transcripts is an array of segment objects
+                const transcripts = searchApiResponse.data?.transcripts;
+                
+                if (!transcripts || !Array.isArray(transcripts) || transcripts.length === 0) {
+                    console.error('No transcripts found in response');
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'No transcript found for this video. The video may not have captions available.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                console.log('Found', transcripts.length, 'transcript segments');
+                
+                // SearchAPI returns an array of segments, each with { text, start, duration }
+                // We need to extract the text from ALL segments and join them
+                const transcriptText = transcripts
+                    .map((segment: any) => segment.text || '')
+                    .filter(Boolean)
+                    .join(' ');
+                
+                console.log('Extracted transcript length:', transcriptText.length);
+                console.log('First 200 chars:', transcriptText.substring(0, 200));
+                console.log('Last 200 chars:', transcriptText.substring(Math.max(0, transcriptText.length - 200)));
+                
+                if (!transcriptText || transcriptText.trim().length === 0) {
+                    console.error('Transcript text is empty after extraction');
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'Transcript is empty. The video may not have valid captions.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                text = transcriptText;
+                extractedText = transcriptText;
+
+            } catch (youtubeError: any) {
+                console.error('YouTube transcript error:', youtubeError);
+                console.error('Error details:', {
+                    message: youtubeError.message,
+                    response: youtubeError.response?.data,
+                    status: youtubeError.response?.status,
+                });
+                
+                if (axios.isAxiosError(youtubeError)) {
+                    if (youtubeError.code === 'ECONNABORTED') {
+                        return NextResponse.json<AnalyzeResponse>(
+                            {
+                                success: false,
+                                error: 'Request timeout. The video transcript is taking too long to fetch.',
+                            },
+                            {status: 500}
+                        );
+                    }
+                    if (youtubeError.response?.status === 401) {
+                        return NextResponse.json<AnalyzeResponse>(
+                            {
+                                success: false,
+                                error: 'Invalid SearchAPI key. Please check your API key configuration.',
+                            },
+                            {status: 500}
+                        );
+                    }
+                    if (youtubeError.response?.status === 403) {
+                        return NextResponse.json<AnalyzeResponse>(
+                            {
+                                success: false,
+                                error: 'SearchAPI access denied. Please check your API key or account status.',
+                            },
+                            {status: 500}
+                        );
+                    }
+                    if (youtubeError.response?.data?.error) {
+                        return NextResponse.json<AnalyzeResponse>(
+                            {
+                                success: false,
+                                error: `SearchAPI error: ${youtubeError.response.data.error}`,
+                            },
+                            {status: 500}
+                        );
+                    }
+                }
+                
+                return NextResponse.json<AnalyzeResponse>(
+                    {
+                        success: false,
+                        error: 'Failed to fetch YouTube transcript. Please ensure the video has captions available. Check server logs for details.',
+                    },
+                    {status: 500}
+                );
+            }
+        }
         // If document is provided, extract text from it first
-        if (document && documentName) {
+        else if (document && documentName) {
             try {
                 // Remove data URL prefix if present
                 const base64Data = document.includes(',') 
@@ -196,19 +334,20 @@ export async function POST(request: NextRequest) {
         const prompt = `You are an AI text analysis assistant. Your task is to analyze the user's input text and return all results strictly in the JSON structure described below.
 
 Your goals:
-1. Provide a concise and accurate summary.
+1. Provide a detailed and complete summary that captures all major ideas, arguments, and important context from the text. The summary should be fuller and more informative than a minimal short summary, while still staying clear and focused.
 2. Extract the most important key points as bullet list items.
-3. Give a clear, easy-to-understand explanation of the text (simplified, as if teaching someone with no background knowledge).
+3. Give a simple, easy-to-understand explanation of the text, written in plain language so that anyone can understand it.
 4. Estimate the reading time in minutes (round up to the nearest whole number).
 
 Follow these rules:
 - The output MUST be valid JSON.
 - DO NOT include text outside the JSON object.
 - DO NOT use markdown formatting inside the JSON.
-- Keep summary short and focused.
+- The summary should be well-developed but not overly long.
+- The explanation must remain simple and beginner-friendly.
 - Key points must be a clean array of strings.
 - For reading_time_minutes, output only a number.
-- If the input text is unclear, incomplete, or nonsensical, do your best to interpret it reasonably.
+- If the input is unclear or incomplete, interpret it reasonably.
 
 Expected JSON structure:
 {

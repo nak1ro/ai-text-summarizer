@@ -8,7 +8,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useTranslation } from '@/hooks/useTranslation';
 
-const MAX_CHARS = 5000;
+const MAX_CHARS = 50000;
 
 type InputMode = 'text' | 'image' | 'document' | 'youtube';
 
@@ -211,10 +211,6 @@ export default function Home() {
     }
   };
 
-  const handleYoutubeExtract = () => {
-    setError('YouTube video extraction is coming soon! This feature will allow you to extract and analyze text from video transcripts.');
-  };
-
   const handleAnalyze = async () => {
     // Reset states
     setError(null);
@@ -222,9 +218,18 @@ export default function Home() {
     setExtractedText(null);
 
     // Validate input
-    if (!text.trim() && !imageBase64 && !documentFile) {
-      setError('Please enter some text, upload an image, or upload a document to analyze');
+    if (!text.trim() && !imageBase64 && !documentFile && !youtubeUrl.trim()) {
+      setError('Please enter some text, upload an image, upload a document, or provide a YouTube URL to analyze');
       return;
+    }
+
+    // Validate YouTube URL if in YouTube mode
+    if (inputMode === 'youtube' && youtubeUrl.trim()) {
+      const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+      if (!youtubeRegex.test(youtubeUrl.trim())) {
+        setError('Please enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=...)');
+        return;
+      }
     }
 
     if (text && text.length > MAX_CHARS) {
@@ -240,9 +245,11 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const requestBody: { text?: string; image?: string; document?: string; documentName?: string } = {};
+      const requestBody: { text?: string; image?: string; document?: string; documentName?: string; youtubeUrl?: string } = {};
       
-      if (documentFile) {
+      if (youtubeUrl.trim() && inputMode === 'youtube') {
+        requestBody.youtubeUrl = youtubeUrl.trim();
+      } else if (documentFile) {
         // Convert document to base64
         const reader = new FileReader();
         const base64Promise = new Promise<string>((resolve, reject) => {
@@ -399,9 +406,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="hidden sm:inline">{t.youtubeMode}</span>
-                <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
-                  {t.comingSoon.split('!')[0]}
-                </span>
               </button>
             </div>
           </div>
@@ -674,25 +678,22 @@ export default function Home() {
                 onChange={(e) => setYoutubeUrl(e.target.value)}
                 placeholder="https://www.youtube.com/watch?v=..."
                 className="w-full px-5 py-4 rounded-xl border-2 border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:focus:border-red-500 transition-all duration-300 shadow-sm focus:shadow-lg"
-                disabled={true}
+                disabled={loading}
               />
-              <div className="mt-4 p-5 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl shadow-md">
-                <div className="flex items-start gap-4">
-                  <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                    <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              {extractedText && (
+                <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
+                  <p className="text-sm font-bold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-yellow-900 dark:text-yellow-200">
-                      {t.comingSoon}
-                    </h3>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1 leading-relaxed">
-                      {t.youtubeComingSoonDesc}
-                    </p>
-                  </div>
+                    {t.extractedText}
+                  </p>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
+                    {extractedText.substring(0, 200)}
+                    {extractedText.length > 200 ? '...' : ''}
+                  </p>
                 </div>
-              </div>
+              )}
             </div>
           )}
 
@@ -719,15 +720,13 @@ export default function Home() {
             )}
             {inputMode !== 'text' && <div />}
               <button
-                onClick={
-                  inputMode === 'youtube' ? handleYoutubeExtract :
-                  handleAnalyze
-                }
+                onClick={handleAnalyze}
                 disabled={
                   loading || 
                   (inputMode === 'text' && !text.trim()) || 
                   (inputMode === 'image' && !imageBase64) ||
-                  (inputMode === 'document' && !documentFile)
+                  (inputMode === 'document' && !documentFile) ||
+                  (inputMode === 'youtube' && !youtubeUrl.trim())
                 }
                 className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-zinc-300 disabled:to-zinc-300 dark:disabled:from-zinc-700 dark:disabled:to-zinc-700 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 disabled:shadow-none disabled:scale-100 flex items-center gap-2.5"
               >

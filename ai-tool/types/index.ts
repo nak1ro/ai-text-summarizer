@@ -13,6 +13,7 @@ export interface AnalyzeRequest {
   image?: string; // Base64 encoded image
   document?: string; // Base64 encoded document
   documentName?: string; // Original filename with extension
+  youtubeUrl?: string; // YouTube video URL
 }
 
 // API response

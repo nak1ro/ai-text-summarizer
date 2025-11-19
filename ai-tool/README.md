@@ -7,9 +7,9 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
 - **🎛️ Multi-Mode Input System**: Easy tab-based switching between input methods
   - **Text Mode**: Direct text input
   - **Image Mode**: Upload or paste images with OCR
-  - **Document Mode**: Coming soon - extract from PDF, Word, TXT files
-  - **YouTube Mode**: Coming soon - extract from video transcripts
-- **📝 Text Input**: Paste or type up to 5,000 characters of text
+  - **Document Mode**: Extract and analyze text from PDF, DOCX, and TXT files
+  - **YouTube Mode**: Extract and analyze video transcripts from YouTube
+- **📝 Text Input**: Paste or type up to 50,000 characters of text
 - **📷 Image Upload & Paste**: Upload or paste images with text (OCR support via OpenAI Vision)
   - **Ctrl+V / Cmd+V**: Paste images directly from clipboard
   - Click to upload from file system
@@ -17,8 +17,17 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
   - Support for various image formats (JPG, PNG, etc.)
   - Max image size: 5MB
   - Shows error if no text is detected in the image
-- **📄 Document Support (Coming Soon)**: Extract text from PDF, Word, and TXT files (up to 10MB)
-- **🎬 YouTube Support (Coming Soon)**: Extract and analyze video transcripts
+- **📄 Document Support**: Extract text from PDF, DOCX, DOC, and TXT files
+  - Drag & drop or click to upload
+  - **Ctrl+V / Cmd+V**: Paste documents directly from clipboard
+  - Support for multiple formats (PDF, DOCX, TXT)
+  - Max document size: 10MB
+  - Automatic text extraction and analysis
+- **🎬 YouTube Support**: Extract and analyze video transcripts
+  - Paste any YouTube video URL
+  - Automatic transcript fetching via SearchAPI
+  - Works with videos that have captions/subtitles
+  - Full transcript analysis with AI
 - **⚡ One-Click Analysis**: Get instant AI-powered insights
 - **📊 Rich Results Display**: 
   - Concise Summary
@@ -46,6 +55,7 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
 
 - Node.js 18+ installed
 - OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
+- SearchAPI API key for YouTube transcripts ([Get one here](https://www.searchapi.io/))
 
 ### Installation
 
@@ -63,7 +73,10 @@ npm install
 3. Create a `.env.local` file in the root directory:
 ```env
 OPENAI_API_KEY=your_openai_api_key_here
+SEARCHAPI_API_KEY=your_searchapi_api_key_here
 ```
+
+> **Note**: SearchAPI key is only required if you want to use the YouTube transcript feature. Text, image, and document analysis work without it.
 
 4. Run the development server:
 ```bash
@@ -100,6 +113,9 @@ ai-tool/
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS v4
 - **AI**: OpenAI GPT-4o-mini
+- **Document Parsing**: pdfreader, mammoth
+- **YouTube Transcripts**: SearchAPI
+- **HTTP Client**: Axios
 - **Font**: Geist Sans & Geist Mono
 
 ## 📡 API Reference
@@ -119,6 +135,21 @@ Analyzes text or extracts and analyzes text from images.
 ```json
 {
   "image": "data:image/jpeg;base64,/9j/4AAQSkZJRg..." // Base64 encoded image
+}
+```
+
+**Request Body (Document):**
+```json
+{
+  "document": "data:application/pdf;base64,...", // Base64 encoded document
+  "documentName": "example.pdf" // Filename with extension
+}
+```
+
+**Request Body (YouTube):**
+```json
+{
+  "youtubeUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 }
 ```
 
@@ -162,7 +193,7 @@ Analyzes text or extracts and analyzes text from images.
 ### Character Counter
 - Real-time character count with visual progress bar
 - Color-coded warnings (orange at 90%, red at 100%)
-- Maximum 5,000 characters
+- Maximum 50,000 characters
 
 ### Error Handling
 - Input validation
@@ -197,14 +228,29 @@ Contributions, issues, and feature requests are welcome!
 
 ## 💡 Tips
 
-- **Ctrl+V / Cmd+V**: Paste images directly from clipboard (screenshots, copied images, etc.)
+### General
+- **Ctrl+V / Cmd+V**: Paste images and documents directly from clipboard
 - **Ctrl+Enter / Cmd+Enter**: Quick text analysis shortcut
-- Upload images containing text (screenshots, documents, signs, etc.)
 - Shorter texts analyze faster
+
+### Image Mode
+- Upload images containing text (screenshots, documents, signs, etc.)
 - Supported image formats: JPG, PNG, GIF, WebP
+- Max size: 5MB
 - For best OCR results, use clear, high-contrast images
-- Try different types of content: articles, emails, code explanations, book pages, etc.
 - Take a screenshot (Windows: Win+Shift+S, Mac: Cmd+Shift+4) and paste directly!
+
+### Document Mode
+- Supported formats: PDF, DOCX, DOC, TXT
+- Max size: 10MB
+- Drag & drop or click to upload
+- Paste documents directly with Ctrl+V
+
+### YouTube Mode
+- Works with any YouTube video URL (youtube.com or youtu.be)
+- Video must have captions/subtitles available
+- Analyzes the entire transcript automatically
+- Great for summarizing lectures, tutorials, and talks
 
 ## 🌟 Acknowledgments
 
