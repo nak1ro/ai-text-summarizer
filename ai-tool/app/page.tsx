@@ -18,6 +18,7 @@ import { AnalysisSettings as AnalysisSettingsComponent } from '@/components/Anal
 import { useAnalysisHistory } from '@/hooks/useAnalysisHistory';
 import { AnalysisHistory } from '@/components/AnalysisHistory';
 import { AnalysisHistoryEntry } from '@/types';
+import { Sidebar } from '@/components/Sidebar';
 
 const MAX_CHARS = 50000;
 
@@ -420,7 +421,7 @@ export default function Home() {
 
   return (
     <div 
-      className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-950 dark:via-blue-950/20 dark:to-purple-950/20 py-8 px-4 relative overflow-hidden"
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-950 dark:via-blue-950/20 dark:to-purple-950/20 relative overflow-hidden"
       onPaste={handlePaste}
     >
       {/* Animated Background Elements */}
@@ -430,29 +431,16 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-400/10 dark:bg-pink-500/5 rounded-full blur-3xl"></div>
       </div>
 
-      <main className="max-w-6xl mx-auto relative z-10">
+      {/* Sidebar - Always visible on the left */}
+      <Sidebar
+        historyCount={history.length}
+        onHistoryClick={() => setIsHistoryOpen(true)}
+      />
+
+      {/* Main Content - Offset for sidebar on desktop */}
+      <main className="lg:ml-20 relative z-10 py-8 px-4">
         {/* Header */}
-        <div className="text-center mb-10 relative animate-fadeIn">
-          {/* Theme Toggle & Language Selector - Positioned in top right */}
-          <div className="absolute top-0 right-0 flex items-center gap-3">
-            <button
-              onClick={() => setIsHistoryOpen(true)}
-              className="px-4 py-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl text-zinc-700 dark:text-zinc-300 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-all duration-300 flex items-center gap-2 shadow-sm hover:shadow-md"
-              title={t.analysisHistory || 'View analysis history'}
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="hidden sm:inline font-semibold">{t.analysisHistory || 'History'}</span>
-              {history.length > 0 && (
-                <span className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">
-                  {history.length}
-                </span>
-              )}
-            </button>
-            <LanguageSelector />
-            <ThemeToggle />
-          </div>
+        <div className="text-center mb-10 relative animate-fadeIn max-w-6xl mx-auto">
           
           <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 tracking-tight">
             {t.title}
@@ -469,7 +457,8 @@ export default function Home() {
         </div>
 
         {/* Input Section */}
-        <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-8 mb-10 animate-scaleIn">
+        <div className="w-4/5 max-w-4/5 mx-auto">
+          <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-8 mb-10 animate-scaleIn">
           {/* Mode Selector Tabs */}
           <div className="mb-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-1.5 bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 rounded-xl shadow-inner border border-zinc-200/50 dark:border-zinc-700/50">
@@ -871,6 +860,7 @@ export default function Home() {
             </p>
           )}
         </div>
+        </div>
 
         {/* Error Message */}
         {error && (
@@ -900,7 +890,7 @@ export default function Home() {
         )}
 
         {/* Results */}
-        <div id="analysis-results">
+        <div id="analysis-results" className="max-w-6xl mx-auto">
           {result && <AnalysisResults result={result} />}
         </div>
       </main>

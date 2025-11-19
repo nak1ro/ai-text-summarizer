@@ -24,6 +24,7 @@ export function ThemeToggle() {
             onClick={toggleTheme}
             aria-label="Toggle theme"
             title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            size="lg"
             icon={
                 theme === 'light' ? (
                     // Moon icon for dark mode

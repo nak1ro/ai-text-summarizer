@@ -15,7 +15,9 @@ const languageFlags: Record<Language, string> = {
 export function LanguageSelector() {
     const {language, setLanguage} = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
+    const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
     const dropdownRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -28,21 +30,32 @@ export function LanguageSelector() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (isOpen && buttonRef.current) {
+            const rect = buttonRef.current.getBoundingClientRect();
+            setDropdownPosition({
+                top: rect.bottom + 8,
+                left: rect.left,
+            });
+        }
+    }, [isOpen]);
+
     const handleLanguageChange = (lang: Language) => {
         setLanguage(lang);
         setIsOpen(false);
     };
 
     return (
-        <div className="relative" ref={dropdownRef}>
+        <div className="relative w-full h-full" ref={dropdownRef}>
             <button
+                ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="group px-4 w-14 py-3 h-12 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center shadow-sm hover:shadow-md text-zinc-700 dark:text-zinc-300 relative overflow-hidden"
+                className="group w-full h-full rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center shadow-sm hover:shadow-md text-zinc-700 dark:text-zinc-300 relative overflow-hidden"
                 aria-label="Select language"
             >
                 <span className="text-xl group-hover:scale-110 transition-transform duration-300">{languageFlags[language]}</span>
                 <svg
-                    className={`absolute bottom-0.5 right-0.5 w-3 h-3 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
+                    className={`absolute bottom-1 right-1 w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
                         isOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -59,7 +72,10 @@ export function LanguageSelector() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-50 animate-scaleIn overflow-hidden">
+                <div 
+                    className="fixed w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-[9999] animate-scaleIn overflow-hidden"
+                    style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                >
                     {(Object.keys(translations) as Language[]).map((lang) => (
                         <button
                             key={lang}

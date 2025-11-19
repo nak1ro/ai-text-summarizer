@@ -52,6 +52,11 @@ export const translations = {
         noHistory: 'No analysis history yet',
         noHistoryDesc: 'Your analyses will appear here after you run them',
         
+        // Sidebar
+        settings: 'Settings',
+        language: 'Language',
+        theme: 'Theme',
+        
         // Tips
         tipCtrlEnter: 'Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze',
         tipCtrlV: 'Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard',
@@ -135,6 +140,11 @@ export const translations = {
         clearHistory: 'Limpiar Todo',
         noHistory: 'Aún no hay historial de análisis',
         noHistoryDesc: 'Tus análisis aparecerán aquí después de ejecutarlos',
+        
+        // Sidebar
+        settings: 'Configuración',
+        language: 'Idioma',
+        theme: 'Tema',
         
         // Tips
         tipCtrlEnter: 'Consejo: Presione Ctrl+Enter (Cmd+Enter en Mac) para analizar',
@@ -220,6 +230,11 @@ export const translations = {
         noHistory: 'Noch kein Analyseverlauf',
         noHistoryDesc: 'Ihre Analysen werden hier angezeigt, nachdem Sie sie ausgeführt haben',
         
+        // Sidebar
+        settings: 'Einstellungen',
+        language: 'Sprache',
+        theme: 'Design',
+        
         // Tips
         tipCtrlEnter: 'Tipp: Drücken Sie Strg+Enter (Cmd+Enter auf Mac) zum Analysieren',
         tipCtrlV: 'Tipp: Drücken Sie Strg+V (Cmd+V auf Mac), um ein Bild aus der Zwischenablage einzufügen',
@@ -304,6 +319,11 @@ export const translations = {
         noHistory: 'Aucun historique d\'analyse pour le moment',
         noHistoryDesc: 'Vos analyses apparaîtront ici après les avoir exécutées',
         
+        // Sidebar
+        settings: 'Paramètres',
+        language: 'Langue',
+        theme: 'Thème',
+        
         // Tips
         tipCtrlEnter: 'Astuce: Appuyez sur Ctrl+Entrée (Cmd+Entrée sur Mac) pour analyser',
         tipCtrlV: 'Astuce: Appuyez sur Ctrl+V (Cmd+V sur Mac) pour coller une image du presse-papiers',
@@ -387,6 +407,11 @@ export const translations = {
         clearHistory: 'Wyczyść Wszystko',
         noHistory: 'Brak historii analiz',
         noHistoryDesc: 'Twoje analizy pojawią się tutaj po ich wykonaniu',
+        
+        // Sidebar
+        settings: 'Ustawienia',
+        language: 'Język',
+        theme: 'Motyw',
         
         // Tips
         tipCtrlEnter: 'Wskazówka: Naciśnij Ctrl+Enter (Cmd+Enter na Mac), aby analizować',
