@@ -2,6 +2,8 @@ import {NextRequest, NextResponse} from 'next/server';
 import OpenAI from 'openai';
 import {AnalyzeRequest, AnalyzeResponse, AnalysisResult} from '@/types';
 import {calculateReadingTime, countWords} from '@/lib/utils';
+import mammoth from 'mammoth';
+const {PdfReader} = require('pdfreader');
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -12,13 +14,95 @@ const MAX_CHARS = 5000;
 export async function POST(request: NextRequest) {
     try {
         const body: AnalyzeRequest = await request.json();
-        const {text: inputText, image} = body;
+        const {text: inputText, image, document, documentName} = body;
 
         let text = inputText || '';
         let extractedText: string | undefined;
 
-        // If image is provided, extract text from it first
-        if (image) {
+        // If document is provided, extract text from it first
+        if (document && documentName) {
+            try {
+                // Remove data URL prefix if present
+                const base64Data = document.includes(',') 
+                    ? document.split(',')[1] 
+                    : document;
+                
+                const buffer = Buffer.from(base64Data, 'base64');
+                const extension = documentName.split('.').pop()?.toLowerCase();
+
+                let extractedContent = '';
+
+                if (extension === 'pdf') {
+                    // Parse PDF using pdfreader
+                    extractedContent = await new Promise((resolve, reject) => {
+                        const textItems: string[] = [];
+                        new PdfReader().parseBuffer(buffer, (err: Error | null, item: any) => {
+                            if (err) {
+                                reject(err);
+                            } else if (!item) {
+                                // End of file
+                                resolve(textItems.join(' '));
+                            } else if (item.text) {
+                                textItems.push(item.text);
+                            }
+                        });
+                    });
+                } else if (extension === 'docx') {
+                    // Parse DOCX
+                    const result = await mammoth.extractRawText({buffer});
+                    extractedContent = result.value;
+                } else if (extension === 'doc') {
+                    // DOC files are harder to parse, try with mammoth anyway
+                    try {
+                        const result = await mammoth.extractRawText({buffer});
+                        extractedContent = result.value;
+                    } catch {
+                        return NextResponse.json<AnalyzeResponse>(
+                            {
+                                success: false,
+                                error: 'Legacy .doc format is not fully supported. Please convert to .docx or use PDF.',
+                            },
+                            {status: 400}
+                        );
+                    }
+                } else if (extension === 'txt') {
+                    // Plain text
+                    extractedContent = buffer.toString('utf-8');
+                } else {
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'Unsupported document format. Please use PDF, DOCX, or TXT.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                if (!extractedContent || extractedContent.trim().length === 0) {
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'No text could be extracted from the document. The document may be empty or corrupted.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                text = extractedContent;
+                extractedText = extractedContent;
+            } catch (documentError) {
+                console.error('Document parsing error:', documentError);
+                return NextResponse.json<AnalyzeResponse>(
+                    {
+                        success: false,
+                        error: 'Failed to process the document. Please ensure the file is valid and try again.',
+                    },
+                    {status: 500}
+                );
+            }
+        }
+        // If image is provided, extract text from it
+        else if (image) {
             try {
                 const visionResponse = await openai.chat.completions.create({
                     model: 'gpt-4o-mini',

@@ -11,6 +11,8 @@ export interface AnalysisResult {
 export interface AnalyzeRequest {
   text?: string;
   image?: string; // Base64 encoded image
+  document?: string; // Base64 encoded document
+  documentName?: string; // Original filename with extension
 }
 
 // API response

@@ -157,10 +157,6 @@ export default function Home() {
     setDocumentFile(null);
   };
 
-  const handleDocumentExtract = () => {
-    setError('Document extraction is coming soon! This feature will allow you to extract and analyze text from PDF, Word, and other document formats.');
-  };
-
   const handlePaste = (e: React.ClipboardEvent) => {
     const items = e.clipboardData?.items;
     const files = e.clipboardData?.files;
@@ -226,8 +222,8 @@ export default function Home() {
     setExtractedText(null);
 
     // Validate input
-    if (!text.trim() && !imageBase64) {
-      setError('Please enter some text or upload an image to analyze');
+    if (!text.trim() && !imageBase64 && !documentFile) {
+      setError('Please enter some text, upload an image, or upload a document to analyze');
       return;
     }
 
@@ -244,9 +240,20 @@ export default function Home() {
     setLoading(true);
 
     try {
-      const requestBody: { text?: string; image?: string } = {};
+      const requestBody: { text?: string; image?: string; document?: string; documentName?: string } = {};
       
-      if (imageBase64) {
+      if (documentFile) {
+        // Convert document to base64
+        const reader = new FileReader();
+        const base64Promise = new Promise<string>((resolve, reject) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(documentFile);
+        });
+        
+        requestBody.document = await base64Promise;
+        requestBody.documentName = documentFile.name;
+      } else if (imageBase64) {
         requestBody.image = imageBase64;
       } else {
         requestBody.text = text;
@@ -376,9 +383,6 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
                 <span className="hidden sm:inline">{t.documentMode}</span>
-                <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
-                  {t.comingSoon.split('!')[0]}
-                </span>
               </button>
               
               <button
@@ -604,23 +608,6 @@ export default function Home() {
                       disabled={loading}
                     />
                   </div>
-                  <div className="mt-4 p-5 bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-2 border-yellow-200 dark:border-yellow-800 rounded-xl shadow-md">
-                    <div className="flex items-start gap-4">
-                      <div className="p-2 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg">
-                        <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-yellow-900 dark:text-yellow-200">
-                          {t.comingSoon}
-                        </h3>
-                        <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1 leading-relaxed">
-                          {t.documentComingSoonDesc}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </>
               ) : (
                 <div>
@@ -652,6 +639,20 @@ export default function Home() {
                       </svg>
                     </button>
                   </div>
+                  {extractedText && (
+                    <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">
+                      <p className="text-sm font-bold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        {t.extractedText}
+                      </p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300 leading-relaxed">
+                        {extractedText.substring(0, 200)}
+                        {extractedText.length > 200 ? '...' : ''}
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -720,13 +721,13 @@ export default function Home() {
               <button
                 onClick={
                   inputMode === 'youtube' ? handleYoutubeExtract :
-                  inputMode === 'document' ? handleDocumentExtract :
                   handleAnalyze
                 }
                 disabled={
                   loading || 
                   (inputMode === 'text' && !text.trim()) || 
-                  (inputMode === 'image' && !imageBase64)
+                  (inputMode === 'image' && !imageBase64) ||
+                  (inputMode === 'document' && !documentFile)
                 }
                 className="px-10 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-zinc-300 disabled:to-zinc-300 dark:disabled:from-zinc-700 dark:disabled:to-zinc-700 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-300 shadow-lg hover:shadow-2xl hover:scale-105 disabled:shadow-none disabled:scale-100 flex items-center gap-2.5"
               >
