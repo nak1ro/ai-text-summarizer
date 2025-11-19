@@ -91,7 +91,7 @@ export function AnalysisHistory({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-4xl max-h-[90vh] mx-4 flex flex-col animate-scaleIn">
+      <div className="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-800 w-full max-w-[90%] max-h-[90vh] mx-4 flex flex-col animate-scaleIn">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-800">
           <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
@@ -164,26 +164,13 @@ export function AnalysisHistory({
                         </div>
                       </div>
 
-                      {/* Settings */}
-                      <div className="flex items-center gap-3 text-xs text-zinc-500 dark:text-zinc-400 mb-3">
-                        <span className="capitalize">{entry.settings.summaryLength}</span>
-                        <span>•</span>
-                        <span className="capitalize">{entry.settings.analysisStyle}</span>
-                      </div>
-
-                      {/* Quick Stats */}
-                      <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-                        <span>{entry.result.wordCount} words</span>
-                        <span>•</span>
-                        <span>{entry.result.readingTime} min read</span>
-                      </div>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => onLoadEntry(entry)}
-                        className="px-3 py-2 text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all hover:scale-105"
+                        className="px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all hover:scale-105"
                       >
                         {t.view || 'View'}
                       </button>

@@ -78,12 +78,12 @@ export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
                 }`}
                 aria-label="Select language"
             >
-                <span className={`${isMobile ? 'text-lg' : 'text-xl'} group-hover:scale-110 transition-transform duration-300`}>{languageFlags[language]}</span>
+                <span className={`${isMobile ? 'text-lg' : 'text-xl'} ${isMobile ? '' : 'group-hover:scale-110 transition-transform duration-300'}`}>{languageFlags[language]}</span>
                 {isMobile && (
                     <span className="text-xs font-medium hidden xs:inline">{language.toUpperCase()}</span>
                 )}
                 <svg
-                    className={`${isMobile ? 'absolute bottom-1 right-1' : 'absolute bottom-1 right-1'} w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
+                    className={`${isMobile ? 'absolute bottom-1 right-1' : 'absolute bottom-1 right-1'} w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400 ${isMobile ? '' : 'transition-transform duration-300'} ${
                         isOpen ? (isMobile ? 'rotate-0' : 'rotate-180') : (isMobile ? 'rotate-180' : 'rotate-0')
                     }`}
                     fill="none"
@@ -101,7 +101,7 @@ export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
 
             {isOpen && isPositioned && (
                 <div 
-                    className="fixed w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-[9999] animate-scaleIn overflow-hidden"
+                    className={`fixed w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-[9999] overflow-hidden ${isMobile ? '' : 'animate-scaleIn'}`}
                     style={{ 
                         top: `${dropdownPosition.top}px`, 
                         left: `${dropdownPosition.left}px`,
@@ -113,7 +113,7 @@ export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
                         <button
                             key={lang}
                             onClick={() => handleLanguageChange(lang)}
-                            className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-all duration-200 ${
+                            className={`w-full px-4 py-3 text-left flex items-center gap-3 ${isMobile ? '' : 'transition-all duration-200'} ${
                                 language === lang
                                     ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-600 dark:text-blue-400 font-medium'
                                     : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80'
@@ -123,7 +123,7 @@ export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
                             <span className="flex-1">{translations[lang].languages[lang]}</span>
                             {language === lang && (
                                 <svg
-                                    className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-scaleIn"
+                                    className={`w-5 h-5 text-blue-600 dark:text-blue-400 ${isMobile ? '' : 'animate-scaleIn'}`}
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"

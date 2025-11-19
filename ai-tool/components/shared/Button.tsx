@@ -23,7 +23,7 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border-2';
+  const baseStyles = 'font-semibold rounded-xl transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden';
   
   const variants = {
     primary: 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg hover:shadow-2xl hover:scale-105 border-transparent',

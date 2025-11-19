@@ -465,6 +465,7 @@ export default function Home() {
                 <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
+                <span className="sm:hidden">Text</span>
                 <span className="hidden sm:inline">{t.textMode}</span>
               </button>
               
@@ -480,6 +481,7 @@ export default function Home() {
                 <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
+                <span className="sm:hidden">Image</span>
                 <span className="hidden sm:inline">{t.imageMode}</span>
               </button>
               
@@ -495,6 +497,7 @@ export default function Home() {
                 <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
+                <span className="sm:hidden">Doc</span>
                 <span className="hidden sm:inline">{t.documentMode}</span>
               </button>
               
@@ -511,6 +514,7 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
+                <span className="sm:hidden">YouTube</span>
                 <span className="hidden sm:inline">{t.youtubeMode}</span>
               </button>
             </div>
@@ -565,17 +569,24 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <p className={`text-lg font-bold mb-2 transition-colors duration-300 ${
+                  <p className={`text-lg font-bold mb-2 transition-colors duration-300 sm:hidden ${
+                    isDraggingImage 
+                      ? 'text-purple-700 dark:text-purple-300' 
+                      : 'text-zinc-700 dark:text-zinc-300'
+                  }`}>
+                    {t.chooseImage}
+                  </p>
+                  <p className={`hidden sm:block text-lg font-bold mb-2 transition-colors duration-300 ${
                     isDraggingImage 
                       ? 'text-purple-700 dark:text-purple-300' 
                       : 'text-zinc-700 dark:text-zinc-300'
                   }`}>
                     {isDraggingImage ? t.dropImageHere : t.dragDropImage}
                   </p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+                  <p className="hidden sm:block text-xs text-zinc-500 dark:text-zinc-400 mb-2">
                     {t.orPasteHint || 'or paste with Ctrl+V (Cmd+V on Mac)'}
                   </p>
-                  <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                  <p className="hidden sm:block text-sm text-zinc-500 dark:text-zinc-400 mb-4">
                     {t.or}
                   </p>
                 </div>
@@ -584,7 +595,7 @@ export default function Home() {
               <div className="flex items-center gap-4 flex-wrap">
                 <label
                   htmlFor="image-upload"
-                  className="px-7 py-4 bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 hover:from-zinc-200 hover:to-zinc-100 dark:hover:from-zinc-700 dark:hover:to-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold rounded-xl cursor-pointer transition-all duration-300 flex items-center gap-3 border-2 border-zinc-300 dark:border-zinc-700 shadow-sm hover:shadow-md"
+                  className="hidden sm:flex px-7 py-4 bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 hover:from-zinc-200 hover:to-zinc-100 dark:hover:from-zinc-700 dark:hover:to-zinc-800 text-zinc-700 dark:text-zinc-300 font-semibold rounded-xl cursor-pointer transition-all duration-300 items-center gap-3 border-2 border-zinc-300 dark:border-zinc-700 shadow-sm hover:shadow-md"
                 >
                   <svg
                     className="w-5 h-5"
@@ -677,21 +688,28 @@ export default function Home() {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                       </div>
-                      <p className={`text-lg font-bold mb-2 transition-colors duration-300 ${
+                      <p className={`text-lg font-bold mb-2 transition-colors duration-300 sm:hidden ${
+                        isDraggingDocument 
+                          ? 'text-pink-700 dark:text-pink-300' 
+                          : 'text-zinc-700 dark:text-zinc-300'
+                      }`}>
+                        {t.chooseDocument}
+                      </p>
+                      <p className={`hidden sm:block text-lg font-bold mb-2 transition-colors duration-300 ${
                         isDraggingDocument 
                           ? 'text-pink-700 dark:text-pink-300' 
                           : 'text-zinc-700 dark:text-zinc-300 group-hover:text-pink-600 dark:group-hover:text-pink-400'
                       }`}>
                         {isDraggingDocument ? t.dropDocumentHere : t.dragDropDocument}
                       </p>
-                      <p className={`text-xs transition-colors duration-300 mb-2 ${
+                      <p className={`hidden sm:block text-xs transition-colors duration-300 mb-2 ${
                         isDraggingDocument 
                           ? 'text-pink-600 dark:text-pink-400' 
                           : 'text-zinc-500 dark:text-zinc-400'
                       }`}>
                         {t.orPasteHint || 'or paste with Ctrl+V (Cmd+V on Mac)'}
                       </p>
-                      <p className={`text-sm transition-colors duration-300 ${
+                      <p className={`hidden sm:block text-sm transition-colors duration-300 ${
                         isDraggingDocument 
                           ? 'text-pink-600 dark:text-pink-400' 
                           : 'text-zinc-500 dark:text-zinc-400'
@@ -781,7 +799,7 @@ export default function Home() {
           {/* Character Counter and Analyze Button */}
           <div className="flex items-center justify-between mb-4">
             {inputMode === 'text' && (
-              <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-3">
                 <div className="w-40 h-2.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden shadow-inner">
                   <div
                     className={`h-full transition-all duration-300 shadow-sm ${

@@ -25,6 +25,7 @@ export const translations = {
         extractedText: 'Extracted Text:',
 
         // Document input
+        chooseDocument: 'Choose Document',
         uploadDocument: 'Upload Document',
         clickToUpload: 'Click to upload document',
         documentFormats: 'PDF, DOCX, DOC, or TXT (max 10MB)',
@@ -138,6 +139,7 @@ export const translations = {
         extractedText: 'Texto Extraído:',
 
         // Document input
+        chooseDocument: 'Elegir Documento',
         uploadDocument: 'Subir Documento',
         clickToUpload: 'Haga clic para subir documento',
         documentFormats: 'PDF, DOCX, DOC o TXT (máx. 10MB)',
@@ -251,6 +253,7 @@ export const translations = {
         extractedText: 'Extrahierter Text:',
 
         // Document input
+        chooseDocument: 'Dokument Wählen',
         uploadDocument: 'Dokument Hochladen',
         clickToUpload: 'Zum Hochladen klicken',
         documentFormats: 'PDF, DOCX, DOC oder TXT (max. 10MB)',
@@ -364,6 +367,7 @@ export const translations = {
         extractedText: 'Texte Extrait:',
 
         // Document input
+        chooseDocument: 'Choisir un Document',
         uploadDocument: 'Télécharger un Document',
         clickToUpload: 'Cliquez pour télécharger un document',
         documentFormats: 'PDF, DOCX, DOC ou TXT (max. 10 Mo)',
@@ -477,6 +481,7 @@ export const translations = {
         extractedText: 'Wyodrębniony Tekst:',
 
         // Document input
+        chooseDocument: 'Wybierz Dokument',
         uploadDocument: 'Prześlij Dokument',
         clickToUpload: 'Kliknij, aby przesłać dokument',
         documentFormats: 'PDF, DOCX, DOC lub TXT (maks. 10MB)',
