@@ -8,6 +8,7 @@ import {CollapseToggle} from './shared/CollapseToggle';
 import {NavigationButton} from './shared/NavigationButton';
 import {ExpandableText} from './shared/ExpandableText';
 import {StatCard} from './shared/StatCard';
+import {TopWordsModal} from './shared/TopWordsModal';
 
 interface AnalysisResultsProps {
     result: AnalysisResult;
@@ -23,6 +24,9 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
         explanation: false,
         stats: false,
     });
+    
+    // State for top words modal
+    const [isTopWordsModalOpen, setIsTopWordsModalOpen] = useState(false);
     
     const toggleSection = (section: string) => {
         setCollapsedSections(prev => ({
@@ -299,36 +303,62 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             size="sm"
                         />
                         
-                        <StatCard
-                            gradient="from-purple-50 to-fuchsia-50 dark:from-purple-950/20 dark:to-fuchsia-950/20"
-                            textGradient="from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400"
-                            borderColor="border-purple-200/50 dark:border-purple-800/50"
-                            glowColor="bg-purple-400/20 dark:bg-purple-600/20"
-                            textColor="text-purple-600 dark:text-purple-400"
-                            value=""
-                            label=""
+                        <div 
+                            onClick={() => setIsTopWordsModalOpen(true)}
+                            className="cursor-pointer transition-transform duration-300 hover:scale-105"
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    setIsTopWordsModalOpen(true);
+                                }
+                            }}
+                            aria-label="Open top words modal"
                         >
-                            <p className="text-sm font-medium text-purple-600 dark:text-purple-400 mb-3">
-                                Top Words
-                            </p>
-                            <div className="space-y-1">
-                                {result.topWords.slice(0, 3).map((item, idx) => (
-                                    <div key={idx} className="flex items-center justify-between text-xs">
-                                        <span className="font-medium text-purple-700 dark:text-purple-300 truncate max-w-[80px]">
-                                            {item.word}
-                                        </span>
-                                        <span className="text-purple-600 dark:text-purple-400 font-bold">
-                                            {item.count}×
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </StatCard>
+                            <StatCard
+                                gradient="from-purple-50 to-fuchsia-50 dark:from-purple-950/20 dark:to-fuchsia-950/20"
+                                textGradient="from-purple-600 to-fuchsia-600 dark:from-purple-400 dark:to-fuchsia-400"
+                                borderColor="border-purple-200/50 dark:border-purple-800/50"
+                                glowColor="bg-purple-400/20 dark:bg-purple-600/20"
+                                textColor="text-purple-600 dark:text-purple-400"
+                                value=""
+                                label=""
+                            >
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-sm font-medium text-purple-600 dark:text-purple-400">
+                                        Top Words
+                                    </p>
+                                    <svg className="w-4 h-4 text-purple-500 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                    </svg>
+                                </div>
+                                <div className="space-y-1">
+                                    {result.topWords.slice(0, 3).map((item, idx) => (
+                                        <div key={idx} className="flex items-center justify-between text-xs">
+                                            <span className="font-medium text-purple-700 dark:text-purple-300 truncate max-w-[80px]">
+                                                {item.word}
+                                            </span>
+                                            <span className="text-purple-600 dark:text-purple-400 font-bold">
+                                                {item.count}×
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </StatCard>
+                        </div>
                     </div>
                 </div>
                 )}
             </ResultCard>
             </div>
+
+            {/* Top Words Modal */}
+            <TopWordsModal
+                isOpen={isTopWordsModalOpen}
+                onClose={() => setIsTopWordsModalOpen(false)}
+                topWords={result.topWords}
+            />
         </div>
     );
 }

@@ -7,7 +7,8 @@
  */
 
 import { useState, useCallback } from 'react';
-import { FILE_LIMITS, ERROR_MESSAGES } from '@/domain/constants';
+import { FILE_LIMITS } from '@/lib/fileConstants';
+import { ERROR_MESSAGES } from '@/lib/errorMessages';
 
 export type FileType = 'image' | 'document';
 

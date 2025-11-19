@@ -11,6 +11,9 @@ import { Button } from '@/components/shared/Button';
 import { ExtractedTextPreview } from '@/components/shared/ExtractedTextPreview';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
 import { IconButton } from '@/components/shared/IconButton';
+import { useErrorHandler } from '@/hooks/useErrorHandler';
+import { ValidationError, FileError } from '@/lib/errors';
+import { ERROR_MESSAGES } from '@/lib/errorMessages';
 
 const MAX_CHARS = 50000;
 
@@ -38,7 +41,7 @@ export default function Home() {
   });
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { error, handleError, clearError, setError } = useErrorHandler();
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState('');
@@ -53,13 +56,13 @@ export default function Home() {
   const processImageFile = (file: File) => {
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      setError('Please upload a valid image file');
+      handleError(new FileError(ERROR_MESSAGES.FILE.INVALID_TYPE('image', 'JPG, PNG, GIF, WEBP')));
       return;
     }
 
     // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      setError('Image size must be less than 5MB');
+      handleError(new FileError(ERROR_MESSAGES.FILE.TOO_LARGE('image', '5MB')));
       return;
     }
 
@@ -70,7 +73,10 @@ export default function Home() {
       setImagePreview(base64String);
       setImageBase64(base64String);
       setText(''); // Clear text input when image is uploaded
-      setError(null);
+      clearError();
+    };
+    reader.onerror = () => {
+      handleError(new FileError(ERROR_MESSAGES.FILE.CORRUPTED));
     };
     reader.readAsDataURL(file);
   };
@@ -113,7 +119,7 @@ export default function Home() {
 
   const handleModeChange = (mode: InputMode) => {
     setInputMode(mode);
-    setError(null);
+    clearError();
     // Don't clear results anymore - they're preserved per mode
     // Clear other inputs when switching modes
     if (mode !== 'text') setText('');
@@ -135,18 +141,18 @@ export default function Home() {
     ];
     
     if (!allowedTypes.includes(file.type)) {
-      setError('Please upload a valid document (PDF, DOCX, DOC, or TXT)');
+      handleError(new FileError(ERROR_MESSAGES.FILE.INVALID_TYPE('document', 'PDF, DOCX, DOC, TXT')));
       return;
     }
 
     // Validate file size (max 10MB)
     if (file.size > 10 * 1024 * 1024) {
-      setError('Document size must be less than 10MB');
+      handleError(new FileError(ERROR_MESSAGES.FILE.TOO_LARGE('document', '10MB')));
       return;
     }
 
     setDocumentFile(file);
-    setError(null);
+    clearError();
   };
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -196,7 +202,7 @@ export default function Home() {
 
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
-          setError('Image size must be less than 5MB');
+          handleError(new FileError(ERROR_MESSAGES.FILE.TOO_LARGE('image', '5MB')));
           return;
         }
 
@@ -208,7 +214,10 @@ export default function Home() {
           setImageBase64(base64String);
           setInputMode('image'); // Switch to image mode
           setText(''); // Clear text input when image is pasted
-          setError(null);
+          clearError();
+        };
+        reader.onerror = () => {
+          handleError(new FileError(ERROR_MESSAGES.FILE.CORRUPTED));
         };
         reader.readAsDataURL(file);
         return;
@@ -236,7 +245,7 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     // Reset error but keep results for other modes
-    setError(null);
+    clearError();
     
     // Clear current mode's result and extracted text
     setResults(prev => ({ ...prev, [inputMode]: null }));
@@ -244,7 +253,7 @@ export default function Home() {
 
     // Validate input
     if (!text.trim() && !imageBase64 && !documentFile && !youtubeUrl.trim()) {
-      setError('Please enter some text, upload an image, upload a document, or provide a YouTube URL to analyze');
+      handleError(new ValidationError(ERROR_MESSAGES.VALIDATION.REQUIRED_INPUT));
       return;
     }
 
@@ -252,18 +261,18 @@ export default function Home() {
     if (inputMode === 'youtube' && youtubeUrl.trim()) {
       const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
       if (!youtubeRegex.test(youtubeUrl.trim())) {
-        setError('Please enter a valid YouTube URL (e.g., https://www.youtube.com/watch?v=...)');
+        handleError(new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_YOUTUBE_URL));
         return;
       }
     }
 
     if (text && text.length > MAX_CHARS) {
-      setError(`Text exceeds maximum length of ${formatCount(MAX_CHARS)} characters`);
+      handleError(new ValidationError(ERROR_MESSAGES.VALIDATION.TEXT_TOO_LONG(MAX_CHARS)));
       return;
     }
 
     if (text && text.trim().length < 10) {
-      setError('Text is too short. Please provide at least 10 characters.');
+      handleError(new ValidationError(ERROR_MESSAGES.VALIDATION.TEXT_TOO_SHORT));
       return;
     }
 
@@ -302,7 +311,7 @@ export default function Home() {
       const data = await response.json();
 
       if (!data.success) {
-        throw new Error(data.error || 'Analysis failed');
+        throw new Error(data.error || ERROR_MESSAGES.API.ANALYSIS_FAILED);
       }
 
       // Store result for current mode
@@ -313,7 +322,7 @@ export default function Home() {
         setExtractedTexts(prev => ({ ...prev, [inputMode]: data.extractedText }));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      handleError(err);
     } finally {
       setLoading(false);
     }
