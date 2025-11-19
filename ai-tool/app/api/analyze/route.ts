@@ -12,14 +12,68 @@ const MAX_CHARS = 5000;
 export async function POST(request: NextRequest) {
     try {
         const body: AnalyzeRequest = await request.json();
-        const {text} = body;
+        const {text: inputText, image} = body;
+
+        let text = inputText || '';
+        let extractedText: string | undefined;
+
+        // If image is provided, extract text from it first
+        if (image) {
+            try {
+                const visionResponse = await openai.chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: [
+                                {
+                                    type: 'text',
+                                    text: 'Extract all text from this image. If there is no text in the image, respond with exactly: "NO_TEXT_FOUND". Otherwise, return only the extracted text without any additional commentary.',
+                                },
+                                {
+                                    type: 'image_url',
+                                    image_url: {
+                                        url: image,
+                                    },
+                                },
+                            ],
+                        },
+                    ],
+                    max_tokens: 1000,
+                });
+
+                const extractedContent = visionResponse.choices[0]?.message?.content?.trim();
+
+                if (!extractedContent || extractedContent === 'NO_TEXT_FOUND') {
+                    return NextResponse.json<AnalyzeResponse>(
+                        {
+                            success: false,
+                            error: 'No text was found in the uploaded image. Please upload an image containing text.',
+                        },
+                        {status: 400}
+                    );
+                }
+
+                text = extractedContent;
+                extractedText = extractedContent;
+            } catch (visionError) {
+                console.error('Vision API error:', visionError);
+                return NextResponse.json<AnalyzeResponse>(
+                    {
+                        success: false,
+                        error: 'Failed to process the image. Please try again or enter text manually.',
+                    },
+                    {status: 500}
+                );
+            }
+        }
 
         // Validate input
         if (!text || typeof text !== 'string') {
             return NextResponse.json<AnalyzeResponse>(
                 {
                     success: false,
-                    error: 'Invalid input: text is required and must be a string',
+                    error: 'Invalid input: text or image is required',
                 },
                 {status: 400}
             );
@@ -128,6 +182,7 @@ ${text}`;
             {
                 success: true,
                 data: result,
+                extractedText,
             },
             {status: 200}
         );

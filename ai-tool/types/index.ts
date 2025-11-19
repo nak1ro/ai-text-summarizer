@@ -8,7 +8,8 @@ export interface AnalysisResult {
 
 // API request body
 export interface AnalyzeRequest {
-  text: string;
+  text?: string;
+  image?: string; // Base64 encoded image
 }
 
 // API response
@@ -16,5 +17,6 @@ export interface AnalyzeResponse {
   success: boolean;
   data?: AnalysisResult;
   error?: string;
+  extractedText?: string; // Text extracted from image
 }
 

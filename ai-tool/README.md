@@ -5,6 +5,13 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
 ## ✨ Features
 
 - **📝 Text Input**: Paste or type up to 5,000 characters of text
+- **📷 Image Upload & Paste**: Upload or paste images with text (OCR support via OpenAI Vision)
+  - **Ctrl+V / Cmd+V**: Paste images directly from clipboard
+  - Click to upload from file system
+  - Automatic text extraction from images
+  - Support for various image formats (JPG, PNG, etc.)
+  - Max image size: 5MB
+  - Shows error if no text is detected in the image
 - **⚡ One-Click Analysis**: Get instant AI-powered insights
 - **📊 Rich Results Display**: 
   - Concise Summary
@@ -81,16 +88,23 @@ ai-tool/
 
 ### POST /api/analyze
 
-Analyzes text and returns structured insights.
+Analyzes text or extracts and analyzes text from images.
 
-**Request Body:**
+**Request Body (Text):**
 ```json
 {
   "text": "Your text to analyze..."
 }
 ```
 
-**Response:**
+**Request Body (Image):**
+```json
+{
+  "image": "data:image/jpeg;base64,/9j/4AAQSkZJRg..." // Base64 encoded image
+}
+```
+
+**Success Response:**
 ```json
 {
   "success": true,
@@ -103,7 +117,16 @@ Analyzes text and returns structured insights.
     ],
     "explanation": "Simple explanation of the content",
     "readingTime": 3
-  }
+  },
+  "extractedText": "Text extracted from image (only if image was uploaded)"
+}
+```
+
+**Error Response (No Text in Image):**
+```json
+{
+  "success": false,
+  "error": "No text was found in the uploaded image. Please upload an image containing text."
 }
 ```
 
@@ -155,9 +178,14 @@ Contributions, issues, and feature requests are welcome!
 
 ## 💡 Tips
 
-- Use Ctrl+Enter (Cmd+Enter on Mac) for quick analysis
+- **Ctrl+V / Cmd+V**: Paste images directly from clipboard (screenshots, copied images, etc.)
+- **Ctrl+Enter / Cmd+Enter**: Quick text analysis shortcut
+- Upload images containing text (screenshots, documents, signs, etc.)
 - Shorter texts analyze faster
-- Try different types of content: articles, emails, code explanations, etc.
+- Supported image formats: JPG, PNG, GIF, WebP
+- For best OCR results, use clear, high-contrast images
+- Try different types of content: articles, emails, code explanations, book pages, etc.
+- Take a screenshot (Windows: Win+Shift+S, Mac: Cmd+Shift+4) and paste directly!
 
 ## 🌟 Acknowledgments
 
