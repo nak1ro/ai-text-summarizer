@@ -105,7 +105,7 @@ export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
                     style={{ 
                         top: `${dropdownPosition.top}px`, 
                         left: `${dropdownPosition.left}px`,
-                        transform: isMobile ? 'translateY(calc(-100% - 8px))' : 'none',
+                        transform: isMobile ? 'translateY(calc(-100% - 80px))' : 'none',
                         transformOrigin: isMobile ? 'bottom' : 'top'
                     }}
                 >

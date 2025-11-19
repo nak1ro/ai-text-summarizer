@@ -122,51 +122,59 @@ export function AnalysisHistory({
                   key={entry.id}
                   className="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 transition-all hover:shadow-lg group"
                 >
-                  <div className="flex items-start gap-4">
+                  {/* Header Row */}
+                  <div className="flex items-start gap-3 mb-3">
                     {/* Icon */}
                     <div className="flex-shrink-0 p-2 bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-lg">
                       {getInputModeIcon(entry.inputMode)}
                     </div>
 
-                    {/* Content */}
+                    {/* Header Info */}
                     <div className="flex-1 min-w-0">
-                      {/* Header */}
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 capitalize">
-                              {entry.inputMode} {t.mode}
-                            </span>
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                              {formatRelativeTime(entry.timestamp, t)}
-                            </span>
-                          </div>
-                          <p className="text-sm text-zinc-600 dark:text-zinc-400 truncate">
-                            {getInputPreview(entry, t)}
-                          </p>
-                        </div>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
+                        <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100 capitalize">
+                          {entry.inputMode} {t.mode}
+                        </span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                          {formatRelativeTime(entry.timestamp, t)}
+                        </span>
                       </div>
-
+                      <p className="text-sm text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                        {getInputPreview(entry, t)}
+                      </p>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <button
-                        onClick={() => onLoadEntry(entry)}
-                        className="px-6 py-3 text-base font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all hover:scale-105"
-                      >
-                        {t.view || 'View'}
-                      </button>
-                      <button
-                        onClick={() => onDeleteEntry(entry.id)}
-                        className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
-                        aria-label="Delete"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
-                    </div>
+                    {/* Delete Button - Desktop */}
+                    <button
+                      onClick={() => onDeleteEntry(entry.id)}
+                      className="hidden sm:block flex-shrink-0 p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                      aria-label="Delete"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+
+                  {/* Actions Row */}
+                  <div className="flex items-center gap-2 ml-0 sm:ml-14">
+                    <button
+                      onClick={() => onLoadEntry(entry)}
+                      className="flex-1 sm:flex-none px-6 py-2.5 text-sm font-semibold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all hover:scale-105 shadow-sm"
+                    >
+                      {t.view || 'View'}
+                    </button>
+                    
+                    {/* Delete Button - Mobile */}
+                    <button
+                      onClick={() => onDeleteEntry(entry.id)}
+                      className="sm:hidden flex-shrink-0 p-2.5 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors border border-red-200 dark:border-red-800/50"
+                      aria-label="Delete"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
               ))}

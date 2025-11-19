@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface ReadingComplexityChartProps {
   readingLevel: string;
@@ -61,6 +62,7 @@ function getGradeCategory(grade: number, levels: any[]) {
 
 export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartProps) {
   const { t } = useTranslation();
+  const isMobile = useMobileDetection();
   const { grade, description } = parseReadingLevel(readingLevel);
   
   // Translate common descriptors in the reading level description
@@ -147,32 +149,34 @@ export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartP
           </p>
         </div>
 
-        {/* Category Labels */}
-        <div className="grid grid-cols-5 gap-2 pt-2">
-          {GRADE_LEVELS.map((level, index) => {
-            const isActive = category.label === level.label;
-            return (
-              <div
-                key={index}
-                className={`text-center py-2 px-2 rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-zinc-200 dark:bg-zinc-700 scale-105 shadow-sm border border-zinc-300 dark:border-zinc-600'
-                    : 'bg-zinc-100/50 dark:bg-zinc-800/30 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
-                }`}
-              >
-                <p
-                  className={`text-xs font-semibold ${
+        {/* Category Labels - Hidden on mobile */}
+        {!isMobile && (
+          <div className="grid grid-cols-5 gap-2 pt-2">
+            {GRADE_LEVELS.map((level, index) => {
+              const isActive = category.label === level.label;
+              return (
+                <div
+                  key={index}
+                  className={`text-center py-2 px-2 rounded-lg transition-all duration-200 ${
                     isActive
-                      ? 'text-zinc-700 dark:text-zinc-300'
-                      : 'text-zinc-500 dark:text-zinc-400'
+                      ? 'bg-zinc-200 dark:bg-zinc-700 scale-105 shadow-sm border border-zinc-300 dark:border-zinc-600'
+                      : 'bg-zinc-100/50 dark:bg-zinc-800/30 hover:bg-zinc-200/50 dark:hover:bg-zinc-700/50'
                   }`}
                 >
-                  {level.shortLabel}
-                </p>
-              </div>
-            );
-          })}
-        </div>
+                  <p
+                    className={`text-xs font-semibold ${
+                      isActive
+                        ? 'text-zinc-700 dark:text-zinc-300'
+                        : 'text-zinc-500 dark:text-zinc-400'
+                    }`}
+                  >
+                    {level.shortLabel}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
       
       {/* Decorative glow */}

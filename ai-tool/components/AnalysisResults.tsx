@@ -4,6 +4,7 @@ import React, {useState} from 'react';
 import {AnalysisResult} from '@/types';
 import {ResultCard} from './ResultCard';
 import {useTranslation} from '@/hooks/useTranslation';
+import {useMobileDetection} from '@/hooks/useMobileDetection';
 import {CollapseToggle} from './shared/CollapseToggle';
 import {NavigationButton} from './shared/NavigationButton';
 import {ExpandableText} from './shared/ExpandableText';
@@ -18,6 +19,7 @@ interface AnalysisResultsProps {
 
 export function AnalysisResults({result}: AnalysisResultsProps) {
     const {t} = useTranslation();
+    const isMobile = useMobileDetection();
     
     // State for collapsed sections
     const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({
@@ -89,17 +91,28 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 accentColor="blue"
                 topRightActions={
                     <>
-                        <CopyButton 
-                            text={result.summary}
-                            label={t.copy || 'Copy'}
-                            className="!p-2"
-                        />
+                        {!isMobile && (
+                            <CopyButton 
+                                text={result.summary}
+                                label={t.copy || 'Copy'}
+                                className="!p-2"
+                            />
+                        )}
                         <CollapseToggle
                             isCollapsed={collapsedSections.summary}
                             onToggle={() => toggleSection('summary')}
                             ariaLabel="Toggle summary"
                         />
                     </>
+                }
+                bottomRightActions={
+                    isMobile ? (
+                        <CopyButton 
+                            text={result.summary}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                        />
+                    ) : undefined
                 }
                 icon={
                     <svg
@@ -130,17 +143,28 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 accentColor="purple"
                 topRightActions={
                     <>
-                        <CopyButton 
-                            text={result.keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
-                            label={t.copy || 'Copy'}
-                            className="!p-2"
-                        />
+                        {!isMobile && (
+                            <CopyButton 
+                                text={result.keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
+                                label={t.copy || 'Copy'}
+                                className="!p-2"
+                            />
+                        )}
                         <CollapseToggle
                             isCollapsed={collapsedSections.keyPoints}
                             onToggle={() => toggleSection('keyPoints')}
                             ariaLabel="Toggle key points"
                         />
                     </>
+                }
+                bottomRightActions={
+                    isMobile ? (
+                        <CopyButton 
+                            text={result.keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                        />
+                    ) : undefined
                 }
                 icon={
                     <svg
@@ -181,17 +205,28 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 accentColor="pink"
                 topRightActions={
                     <>
-                        <CopyButton 
-                            text={result.explanation}
-                            label={t.copy || 'Copy'}
-                            className="!p-2"
-                        />
+                        {!isMobile && (
+                            <CopyButton 
+                                text={result.explanation}
+                                label={t.copy || 'Copy'}
+                                className="!p-2"
+                            />
+                        )}
                         <CollapseToggle
                             isCollapsed={collapsedSections.explanation}
                             onToggle={() => toggleSection('explanation')}
                             ariaLabel="Toggle explanation"
                         />
                     </>
+                }
+                bottomRightActions={
+                    isMobile ? (
+                        <CopyButton 
+                            text={result.explanation}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                        />
+                    ) : undefined
                 }
                 icon={
                     <svg
@@ -220,7 +255,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             <ResultCard
                 title={
                     <div className="flex items-center justify-between w-full">
-                        <span>{t.readingTimeStats}</span>
+                        <span>{isMobile ? t.statistics : t.readingTimeStats}</span>
                         <CollapseToggle
                             isCollapsed={collapsedSections.stats}
                             onToggle={() => toggleSection('stats')}

@@ -7,9 +7,10 @@ interface ResultCardProps {
     className?: string;
     accentColor?: 'blue' | 'purple' | 'pink' | 'green';
     topRightActions?: React.ReactNode;
+    bottomRightActions?: React.ReactNode;
 }
 
-export function ResultCard({title, icon, children, className = '', accentColor = 'blue', topRightActions}: ResultCardProps) {
+export function ResultCard({title, icon, children, className = '', accentColor = 'blue', topRightActions, bottomRightActions}: ResultCardProps) {
     const accentColors = {
         blue: 'from-blue-500 to-cyan-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30',
         purple: 'from-purple-500 to-pink-500 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30',
@@ -45,6 +46,13 @@ export function ResultCard({title, icon, children, className = '', accentColor =
                     </h3>
                 </div>
                 <div className="text-zinc-700 dark:text-zinc-300 leading-relaxed">{children}</div>
+                
+                {/* Bottom Right Actions */}
+                {bottomRightActions && (
+                    <div className="flex items-center justify-end gap-2 mt-4">
+                        {bottomRightActions}
+                    </div>
+                )}
             </div>
         </div>
     );
