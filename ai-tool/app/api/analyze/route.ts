@@ -112,12 +112,13 @@ ${text}`;
         // Parse JSON response
         const parsedResponse = JSON.parse(aiResponse);
 
-        const readingTime = calculateReadingTime(text);
+        // Fallback to calculated reading time if AI doesn't provide it
+        const readingTime = parsedResponse.reading_time_minutes || calculateReadingTime(text);
 
         const result: AnalysisResult = {
             summary: parsedResponse.summary || 'No summary available',
-            keyPoints: Array.isArray(parsedResponse.keyPoints)
-                ? parsedResponse.keyPoints
+            keyPoints: Array.isArray(parsedResponse.key_points)
+                ? parsedResponse.key_points
                 : [],
             explanation: parsedResponse.explanation || 'No explanation available',
             readingTime,
