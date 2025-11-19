@@ -9,6 +9,8 @@ import {NavigationButton} from './shared/NavigationButton';
 import {ExpandableText} from './shared/ExpandableText';
 import {StatCard} from './shared/StatCard';
 import {TopWordsModal} from './shared/TopWordsModal';
+import {CopyButton} from './shared/CopyButton';
+import {Toast} from './shared/Toast';
 
 interface AnalysisResultsProps {
     result: AnalysisResult;
@@ -28,6 +30,10 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
     // State for top words modal
     const [isTopWordsModalOpen, setIsTopWordsModalOpen] = useState(false);
     
+    // State for toast
+    const [toastMessage, setToastMessage] = useState<string>('');
+    const [showToast, setShowToast] = useState(false);
+    
     const toggleSection = (section: string) => {
         setCollapsedSections(prev => ({
             ...prev,
@@ -40,6 +46,11 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+    };
+
+    const showCopyToast = (itemName: string) => {
+        setToastMessage(`${itemName} ${t.copied || 'copied to clipboard!'}`);
+        setShowToast(true);
     };
     
     return (
@@ -83,17 +94,23 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Summary Card */}
             <div id="summary-section">
             <ResultCard
-                title={
-                    <div className="flex items-center justify-between w-full">
-                        <span>{t.summary}</span>
+                title={t.summary}
+                accentColor="blue"
+                topRightActions={
+                    <>
+                        <CopyButton 
+                            text={result.summary}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                            onCopy={() => showCopyToast(t.summary)}
+                        />
                         <CollapseToggle
                             isCollapsed={collapsedSections.summary}
                             onToggle={() => toggleSection('summary')}
                             ariaLabel="Toggle summary"
                         />
-                    </div>
+                    </>
                 }
-                accentColor="blue"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -119,17 +136,23 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Key Points Card */}
             <div id="keypoints-section">
             <ResultCard
-                title={
-                    <div className="flex items-center justify-between w-full">
-                        <span>{t.keyPoints}</span>
+                title={t.keyPoints}
+                accentColor="purple"
+                topRightActions={
+                    <>
+                        <CopyButton 
+                            text={result.keyPoints.map((point, index) => `${index + 1}. ${point}`).join('\n')}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                            onCopy={() => showCopyToast(t.keyPoints)}
+                        />
                         <CollapseToggle
                             isCollapsed={collapsedSections.keyPoints}
                             onToggle={() => toggleSection('keyPoints')}
                             ariaLabel="Toggle key points"
                         />
-                    </div>
+                    </>
                 }
-                accentColor="purple"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -165,17 +188,23 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Explanation Card */}
             <div id="explanation-section">
             <ResultCard
-                title={
-                    <div className="flex items-center justify-between w-full">
-                        <span>{t.simpleExplanation}</span>
+                title={t.simpleExplanation}
+                accentColor="pink"
+                topRightActions={
+                    <>
+                        <CopyButton 
+                            text={result.explanation}
+                            label={t.copy || 'Copy'}
+                            className="!p-2"
+                            onCopy={() => showCopyToast(t.simpleExplanation)}
+                        />
                         <CollapseToggle
                             isCollapsed={collapsedSections.explanation}
                             onToggle={() => toggleSection('explanation')}
                             ariaLabel="Toggle explanation"
                         />
-                    </div>
+                    </>
                 }
-                accentColor="pink"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -358,6 +387,13 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                 isOpen={isTopWordsModalOpen}
                 onClose={() => setIsTopWordsModalOpen(false)}
                 topWords={result.topWords}
+            />
+
+            {/* Toast Notification */}
+            <Toast
+                message={toastMessage || t.copied || 'Copied to clipboard!'}
+                isVisible={showToast}
+                onClose={() => setShowToast(false)}
             />
         </div>
     );

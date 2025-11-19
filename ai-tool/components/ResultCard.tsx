@@ -6,9 +6,10 @@ interface ResultCardProps {
     children: React.ReactNode;
     className?: string;
     accentColor?: 'blue' | 'purple' | 'pink' | 'green';
+    topRightActions?: React.ReactNode;
 }
 
-export function ResultCard({title, icon, children, className = '', accentColor = 'blue'}: ResultCardProps) {
+export function ResultCard({title, icon, children, className = '', accentColor = 'blue', topRightActions}: ResultCardProps) {
     const accentColors = {
         blue: 'from-blue-500 to-cyan-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/30',
         purple: 'from-purple-500 to-pink-500 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/30',
@@ -29,11 +30,17 @@ export function ResultCard({title, icon, children, className = '', accentColor =
             <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${gradientColors} opacity-60 group-hover:opacity-100 transition-opacity duration-500`}></div>
             
             <div className="relative z-10">
+                {/* Top Right Actions */}
+                {topRightActions && (
+                    <div className="absolute top-0 right-0 flex items-center gap-2 z-20">
+                        {topRightActions}
+                    </div>
+                )}
                 <div className="flex items-center gap-4 mb-5">
                     <div className={`flex-shrink-0 ${iconColor} p-3 rounded-xl ${bgColor} shadow-sm group-hover:scale-110 transition-transform duration-300`}>
                         {icon}
                     </div>
-                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight">
+                    <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50 tracking-tight flex-1">
                         {title}
                     </h3>
                 </div>

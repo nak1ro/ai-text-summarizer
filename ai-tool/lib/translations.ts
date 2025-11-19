@@ -61,6 +61,10 @@ export const translations = {
         word: 'word',
         words: 'words',
         
+        // Copy actions
+        copy: 'Copy',
+        copied: 'copied to clipboard!',
+        
         // Errors
         error: 'Error',
         noTextInImage: 'No text was found in the uploaded image. Please upload an image containing text.',
@@ -133,6 +137,10 @@ export const translations = {
         minutes: 'minutos',
         word: 'palabra',
         words: 'palabras',
+        
+        // Copy actions
+        copy: 'Copiar',
+        copied: 'copiado al portapapeles!',
         
         // Errors
         error: 'Error',
@@ -207,6 +215,10 @@ export const translations = {
         word: 'Wort',
         words: 'Wörter',
         
+        // Copy actions
+        copy: 'Kopieren',
+        copied: 'in die Zwischenablage kopiert!',
+        
         // Errors
         error: 'Fehler',
         noTextInImage: 'Im hochgeladenen Bild wurde kein Text gefunden. Bitte laden Sie ein Bild mit Text hoch.',
@@ -280,6 +292,10 @@ export const translations = {
         word: 'mot',
         words: 'mots',
         
+        // Copy actions
+        copy: 'Copier',
+        copied: 'copié dans le presse-papiers!',
+        
         // Errors
         error: 'Erreur',
         noTextInImage: 'Aucun texte n\'a été trouvé dans l\'image téléchargée. Veuillez télécharger une image contenant du texte.',
@@ -352,6 +368,10 @@ export const translations = {
         minutes: 'minuty',
         word: 'słowo',
         words: 'słowa',
+        
+        // Copy actions
+        copy: 'Kopiuj',
+        copied: 'skopiowano do schowka!',
         
         // Errors
         error: 'Błąd',
