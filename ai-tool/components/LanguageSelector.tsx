@@ -37,12 +37,12 @@ export function LanguageSelector() {
         <div className="relative" ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="p-2.5 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 transition-colors duration-200 border border-zinc-200 dark:border-zinc-700 flex items-center gap-2"
+                className="group p-3 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center gap-2 shadow-sm hover:shadow-md"
                 aria-label="Select language"
             >
-                <span className="text-xl">{languageFlags[language]}</span>
+                <span className="text-xl group-hover:scale-110 transition-transform duration-300">{languageFlags[language]}</span>
                 <svg
-                    className={`w-4 h-4 text-zinc-600 dark:text-zinc-400 transition-transform ${
+                    className={`w-4 h-4 text-zinc-600 dark:text-zinc-400 transition-transform duration-300 ${
                         isOpen ? 'rotate-180' : ''
                     }`}
                     fill="none"
@@ -59,22 +59,22 @@ export function LanguageSelector() {
             </button>
 
             {isOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 py-1 z-50">
+                <div className="absolute right-0 mt-2 w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-50 animate-scaleIn overflow-hidden">
                     {(Object.keys(translations) as Language[]).map((lang) => (
                         <button
                             key={lang}
                             onClick={() => handleLanguageChange(lang)}
-                            className={`w-full px-4 py-2 text-left flex items-center gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors ${
+                            className={`w-full px-4 py-3 text-left flex items-center gap-3 transition-all duration-200 ${
                                 language === lang
-                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                    : 'text-zinc-700 dark:text-zinc-300'
+                                    ? 'bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/30 dark:to-indigo-900/30 text-blue-600 dark:text-blue-400 font-medium'
+                                    : 'text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100/80 dark:hover:bg-zinc-800/80'
                             }`}
                         >
                             <span className="text-xl">{languageFlags[lang]}</span>
                             <span className="flex-1">{translations[lang].languages[lang]}</span>
                             {language === lang && (
                                 <svg
-                                    className="w-5 h-5 text-blue-600 dark:text-blue-400"
+                                    className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-scaleIn"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"

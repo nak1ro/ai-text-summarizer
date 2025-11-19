@@ -13,10 +13,11 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
     const {t} = useTranslation();
     
     return (
-        <div className="w-full max-w-4xl mx-auto space-y-6 animate-fadeIn">
+        <div className="w-full max-w-5xl mx-auto space-y-6 animate-fadeIn">
             {/* Summary Card */}
             <ResultCard
                 title={t.summary}
+                accentColor="blue"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -39,6 +40,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Key Points Card */}
             <ResultCard
                 title={t.keyPoints}
+                accentColor="purple"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -55,14 +57,14 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                     {result.keyPoints.map((point, index) => (
-                        <li key={index} className="flex gap-3">
+                        <li key={index} className="flex gap-4 group">
               <span
-                  className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 flex items-center justify-center text-sm font-medium">
+                  className="flex-shrink-0 w-8 h-8 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 text-white flex items-center justify-center text-sm font-bold shadow-md group-hover:scale-110 transition-transform duration-300">
                 {index + 1}
               </span>
-                            <span className="flex-1 pt-0.5">{point}</span>
+                            <span className="flex-1 pt-1 text-base">{point}</span>
                         </li>
                     ))}
                 </ul>
@@ -71,6 +73,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Explanation Card */}
             <ResultCard
                 title={t.simpleExplanation}
+                accentColor="pink"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -93,6 +96,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
             {/* Reading Time Card */}
             <ResultCard
                 title={t.readingTimeStats}
+                accentColor="green"
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -109,33 +113,39 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <div className="space-y-4">
-                    <div>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
-                                {result.readingTime}
-                            </span>
-                            <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                                {result.readingTime === 1 ? t.minute : t.minutes}
-                            </span>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-6 rounded-xl border border-green-200/50 dark:border-green-800/50">
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-3 mb-2">
+                                <span className="text-5xl font-black bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
+                                    {result.readingTime}
+                                </span>
+                                <span className="text-xl font-semibold text-green-700 dark:text-green-300">
+                                    {result.readingTime === 1 ? t.minute : t.minutes}
+                                </span>
+                            </div>
+                            <p className="text-sm font-medium text-green-600 dark:text-green-400">
+                                {t.estimatedReadingTime}
+                            </p>
                         </div>
-                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                            {t.estimatedReadingTime}
-                        </p>
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-green-400/20 dark:bg-green-600/20 rounded-full blur-2xl"></div>
                     </div>
                     
-                    <div className="pt-3 border-t border-zinc-200 dark:border-zinc-700">
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-2xl font-semibold text-zinc-700 dark:text-zinc-300">
-                                {result.wordCount.toLocaleString()}
-                            </span>
-                            <span className="text-base text-zinc-600 dark:text-zinc-400">
-                                {result.wordCount === 1 ? t.word : t.words}
-                            </span>
+                    <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 p-6 rounded-xl border border-emerald-200/50 dark:border-emerald-800/50">
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-3 mb-2">
+                                <span className="text-5xl font-black bg-gradient-to-r from-emerald-600 to-teal-600 dark:from-emerald-400 dark:to-teal-400 bg-clip-text text-transparent">
+                                    {result.wordCount.toLocaleString()}
+                                </span>
+                                <span className="text-xl font-semibold text-emerald-700 dark:text-emerald-300">
+                                    {result.wordCount === 1 ? t.word : t.words}
+                                </span>
+                            </div>
+                            <p className="text-sm font-medium text-emerald-600 dark:text-emerald-400">
+                                {t.totalWordCount}
+                            </p>
                         </div>
-                        <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                            {t.totalWordCount}
-                        </p>
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-400/20 dark:bg-emerald-600/20 rounded-full blur-2xl"></div>
                     </div>
                 </div>
             </ResultCard>
