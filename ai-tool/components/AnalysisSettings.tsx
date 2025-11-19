@@ -112,7 +112,7 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
             <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">
               {t.summaryLength || 'Summary Length'}
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {summaryLengthOptions.map((option) => (
                 <button
                   key={option.value}
@@ -142,7 +142,7 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
             <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-3">
               {t.analysisStyle || 'Analysis Style'}
             </label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {analysisStyleOptions.map((option) => (
                 <button
                   key={option.value}

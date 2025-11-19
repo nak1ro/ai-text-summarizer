@@ -437,19 +437,19 @@ export default function Home() {
         onHistoryClick={() => setIsHistoryOpen(true)}
       />
 
-      {/* Main Content - Offset for sidebar on desktop */}
-      <main className="lg:ml-20 relative z-10 py-8 px-4">
+      {/* Main Content - Offset for sidebar on desktop, padding for bottom bar on mobile */}
+      <main className="lg:ml-20 pb-20 lg:pb-8 relative z-10 py-8 px-4">
         {/* Header */}
-        <div className="text-center mb-10 relative animate-fadeIn max-w-6xl mx-auto">
+        <div className="text-center mb-6 lg:mb-10 relative animate-fadeIn max-w-6xl mx-auto">
           
-          <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 tracking-tight">
             {t.title}
           </h1>
         </div>
 
         {/* Input Section */}
-        <div className="w-90% max-w-5xl mx-auto">
-          <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-8 mb-10 animate-scaleIn">
+        <div className="w-full sm:w-4/5 max-w-5xl mx-auto">
+          <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-4 sm:p-6 lg:p-8 mb-6 lg:mb-10 animate-scaleIn">
           {/* Mode Selector Tabs */}
           <div className="mb-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-1.5 bg-gradient-to-br from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 rounded-xl shadow-inner border border-zinc-200/50 dark:border-zinc-700/50">
@@ -571,6 +571,9 @@ export default function Home() {
                       : 'text-zinc-700 dark:text-zinc-300'
                   }`}>
                     {isDraggingImage ? t.dropImageHere : t.dragDropImage}
+                  </p>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400 mb-2">
+                    {t.orPasteHint || 'or paste with Ctrl+V (Cmd+V on Mac)'}
                   </p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
                     {t.or}
@@ -703,6 +706,13 @@ export default function Home() {
                           : 'text-zinc-700 dark:text-zinc-300 group-hover:text-pink-600 dark:group-hover:text-pink-400'
                       }`}>
                         {isDraggingDocument ? t.dropDocumentHere : t.dragDropDocument}
+                      </p>
+                      <p className={`text-xs transition-colors duration-300 mb-2 ${
+                        isDraggingDocument 
+                          ? 'text-pink-600 dark:text-pink-400' 
+                          : 'text-zinc-500 dark:text-zinc-400'
+                      }`}>
+                        {t.orPasteHint || 'or paste with Ctrl+V (Cmd+V on Mac)'}
                       </p>
                       <p className={`text-sm transition-colors duration-300 ${
                         isDraggingDocument 

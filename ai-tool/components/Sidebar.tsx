@@ -14,7 +14,34 @@ export function Sidebar({ historyCount = 0, onHistoryClick }: SidebarProps) {
 
   return (
     <>
-      {/* Sidebar */}
+      {/* Sidebar - Desktop: left side, Mobile: bottom */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-20 bg-white dark:bg-zinc-900 shadow-lg z-30 border-t border-zinc-200 dark:border-zinc-800 flex flex-row items-center justify-center px-4 gap-10">
+        {/* Mobile: Horizontal layout with wider buttons */}
+        <button
+          onClick={onHistoryClick}
+          className="relative w-28 max-w-28 h-14 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 rounded-xl border border-blue-200 dark:border-blue-800 hover:from-blue-100 hover:to-purple-100 dark:hover:from-blue-900/30 dark:hover:to-purple-900/30 transition-all duration-300 group hover:scale-105 active:scale-95"
+          title={historyCount === 0 ? (t.noHistory || 'No analyses yet') : `${historyCount} ${historyCount === 1 ? 'analysis' : 'analyses'}`}
+        >
+          <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          {historyCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center text-xs font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">
+              {historyCount > 9 ? '9+' : historyCount}
+            </span>
+          )}
+        </button>
+
+        <div className="w-28 max-w-28 h-14">
+          <LanguageSelector isMobile={true} />
+        </div>
+
+        <div className="w-28 max-w-28 h-14">
+          <ThemeToggle isMobile={true} />
+        </div>
+      </div>
+      
+      {/* Desktop Sidebar */}
       <div className="hidden lg:flex fixed top-0 left-0 h-full w-20 bg-white dark:bg-zinc-900 shadow-lg z-30 border-r border-zinc-200 dark:border-zinc-800 flex-col">
         <div className="flex-1 flex flex-col">
           {/* Header */}
@@ -50,13 +77,13 @@ export function Sidebar({ historyCount = 0, onHistoryClick }: SidebarProps) {
             {/* Language Selector Section */}
             <div className="w-full flex flex-col items-center">
               <div className="w-14 h-14">
-                <LanguageSelector />
+                <LanguageSelector isMobile={false} />
               </div>
             </div>
 
             {/* Theme Toggle Section */}
             <div className="w-full flex flex-col items-center">
-              <ThemeToggle />
+              <ThemeToggle isMobile={false} />
             </div>
           </div>
         </div>

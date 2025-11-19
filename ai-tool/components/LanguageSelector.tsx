@@ -12,10 +12,15 @@ const languageFlags: Record<Language, string> = {
     pl: '🇵🇱',
 };
 
-export function LanguageSelector() {
+interface LanguageSelectorProps {
+    isMobile?: boolean;
+}
+
+export function LanguageSelector({ isMobile = false }: LanguageSelectorProps) {
     const {language, setLanguage} = useLanguage();
     const [isOpen, setIsOpen] = useState(false);
     const [dropdownPosition, setDropdownPosition] = useState({ top: 0, left: 0 });
+    const [isPositioned, setIsPositioned] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -23,6 +28,7 @@ export function LanguageSelector() {
         function handleClickOutside(event: MouseEvent) {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
                 setIsOpen(false);
+                setIsPositioned(false);
             }
         }
 
@@ -32,13 +38,30 @@ export function LanguageSelector() {
 
     useEffect(() => {
         if (isOpen && buttonRef.current) {
-            const rect = buttonRef.current.getBoundingClientRect();
-            setDropdownPosition({
-                top: rect.bottom + 8,
-                left: rect.left,
+            // Use requestAnimationFrame to ensure DOM is ready
+            requestAnimationFrame(() => {
+                if (buttonRef.current) {
+                    const rect = buttonRef.current.getBoundingClientRect();
+                    if (isMobile) {
+                        // Mobile: open to the top - calculate position accounting for transform
+                        setDropdownPosition({
+                            top: rect.top + rect.height,
+                            left: rect.left,
+                        });
+                    } else {
+                        // Desktop: open to the right
+                        setDropdownPosition({
+                            top: rect.bottom + 8,
+                            left: rect.left,
+                        });
+                    }
+                    setIsPositioned(true);
+                }
             });
+        } else {
+            setIsPositioned(false);
         }
-    }, [isOpen]);
+    }, [isOpen, isMobile]);
 
     const handleLanguageChange = (lang: Language) => {
         setLanguage(lang);
@@ -50,13 +73,18 @@ export function LanguageSelector() {
             <button
                 ref={buttonRef}
                 onClick={() => setIsOpen(!isOpen)}
-                className="group w-full h-full rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center shadow-sm hover:shadow-md text-zinc-700 dark:text-zinc-300 relative overflow-hidden"
+                className={`group w-full h-full rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 hover:from-zinc-200 hover:to-zinc-100 dark:from-zinc-800 dark:to-zinc-900 dark:hover:from-zinc-700 dark:hover:to-zinc-800 transition-all duration-300 border border-zinc-200/50 dark:border-zinc-700/50 flex items-center justify-center shadow-sm hover:shadow-md text-zinc-700 dark:text-zinc-300 relative overflow-hidden ${
+                    isMobile ? 'gap-1.5' : ''
+                }`}
                 aria-label="Select language"
             >
-                <span className="text-xl group-hover:scale-110 transition-transform duration-300">{languageFlags[language]}</span>
+                <span className={`${isMobile ? 'text-lg' : 'text-xl'} group-hover:scale-110 transition-transform duration-300`}>{languageFlags[language]}</span>
+                {isMobile && (
+                    <span className="text-xs font-medium hidden xs:inline">{language.toUpperCase()}</span>
+                )}
                 <svg
-                    className={`absolute bottom-1 right-1 w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
-                        isOpen ? 'rotate-180' : ''
+                    className={`${isMobile ? 'absolute bottom-1 right-1' : 'absolute bottom-1 right-1'} w-2.5 h-2.5 text-zinc-500 dark:text-zinc-400 transition-transform duration-300 ${
+                        isOpen ? (isMobile ? 'rotate-0' : 'rotate-180') : (isMobile ? 'rotate-180' : 'rotate-0')
                     }`}
                     fill="none"
                     stroke="currentColor"
@@ -71,10 +99,15 @@ export function LanguageSelector() {
                 </svg>
             </button>
 
-            {isOpen && (
+            {isOpen && isPositioned && (
                 <div 
                     className="fixed w-52 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-700/50 py-2 z-[9999] animate-scaleIn overflow-hidden"
-                    style={{ top: `${dropdownPosition.top}px`, left: `${dropdownPosition.left}px` }}
+                    style={{ 
+                        top: `${dropdownPosition.top}px`, 
+                        left: `${dropdownPosition.left}px`,
+                        transform: isMobile ? 'translateY(calc(-100% - 8px))' : 'none',
+                        transformOrigin: isMobile ? 'bottom' : 'top'
+                    }}
                 >
                     {(Object.keys(translations) as Language[]).map((lang) => (
                         <button
