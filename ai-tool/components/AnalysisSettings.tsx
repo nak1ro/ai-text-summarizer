@@ -17,16 +17,17 @@ interface AnalysisSettingsProps {
   disabled?: boolean;
 }
 
-const SUMMARY_LENGTH_OPTIONS: Array<{ value: SummaryLength; label: string; icon: string; description: string }> = [
-  { value: 'short', label: 'Short', icon: '📝', description: 'Concise overview' },
-  { value: 'medium', label: 'Medium', icon: '📄', description: 'Balanced detail' },
-  { value: 'long', label: 'Long', icon: '📚', description: 'Comprehensive analysis' },
+// Options will be built using translations
+const getSummaryLengthOptions = (t: any): Array<{ value: SummaryLength; label: string; icon: string; description: string }> => [
+  { value: 'short', label: t.short || 'Short', icon: '📝', description: t.shortDescription || 'Concise overview' },
+  { value: 'medium', label: t.medium || 'Medium', icon: '📄', description: t.mediumDescription || 'Balanced detail' },
+  { value: 'long', label: t.long || 'Long', icon: '📚', description: t.longDescription || 'Comprehensive analysis' },
 ];
 
-const ANALYSIS_STYLE_OPTIONS: Array<{ value: AnalysisStyle; label: string; icon: string; description: string }> = [
-  { value: 'academic', label: 'Academic', icon: '🎓', description: 'Formal, scholarly' },
-  { value: 'casual', label: 'Casual', icon: '💬', description: 'Conversational, friendly' },
-  { value: 'technical', label: 'Technical', icon: '⚙️', description: 'Professional, precise' },
+const getAnalysisStyleOptions = (t: any): Array<{ value: AnalysisStyle; label: string; icon: string; description: string }> => [
+  { value: 'academic', label: t.academic || 'Academic', icon: '🎓', description: t.academicDescription || 'Formal, scholarly' },
+  { value: 'casual', label: t.casual || 'Casual', icon: '💬', description: t.casualDescription || 'Conversational, friendly' },
+  { value: 'technical', label: t.technical || 'Technical', icon: '⚙️', description: t.technicalDescription || 'Professional, precise' },
 ];
 
 const STORAGE_KEY = 'analysisSettings';
@@ -34,6 +35,9 @@ const STORAGE_KEY = 'analysisSettings';
 export function AnalysisSettings({ settings, onSettingsChange, disabled = false }: AnalysisSettingsProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const summaryLengthOptions = getSummaryLengthOptions(t);
+  const analysisStyleOptions = getAnalysisStyleOptions(t);
 
   // Load settings from localStorage on mount
   useEffect(() => {
@@ -84,8 +88,8 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
               {t.analysisSettings || 'Analysis Settings'}
             </div>
             <div className="text-xs text-zinc-500 dark:text-zinc-400">
-              {SUMMARY_LENGTH_OPTIONS.find(opt => opt.value === settings.summaryLength)?.label} • {' '}
-              {ANALYSIS_STYLE_OPTIONS.find(opt => opt.value === settings.analysisStyle)?.label}
+              {summaryLengthOptions.find(opt => opt.value === settings.summaryLength)?.label} • {' '}
+              {analysisStyleOptions.find(opt => opt.value === settings.analysisStyle)?.label}
             </div>
           </div>
         </div>
@@ -109,7 +113,7 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
               {t.summaryLength || 'Summary Length'}
             </label>
             <div className="grid grid-cols-3 gap-3">
-              {SUMMARY_LENGTH_OPTIONS.map((option) => (
+              {summaryLengthOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"
@@ -139,7 +143,7 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
               {t.analysisStyle || 'Analysis Style'}
             </label>
             <div className="grid grid-cols-3 gap-3">
-              {ANALYSIS_STYLE_OPTIONS.map((option) => (
+              {analysisStyleOptions.map((option) => (
                 <button
                   key={option.value}
                   type="button"

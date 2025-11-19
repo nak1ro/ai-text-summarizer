@@ -45,6 +45,22 @@ export const translations = {
         summaryLength: 'Summary Length',
         analysisStyle: 'Analysis Style',
         
+        // Summary Length Options
+        short: 'Short',
+        medium: 'Medium',
+        long: 'Long',
+        shortDescription: 'Concise overview',
+        mediumDescription: 'Balanced detail',
+        longDescription: 'Comprehensive analysis',
+        
+        // Analysis Style Options
+        academic: 'Academic',
+        casual: 'Casual',
+        technical: 'Technical',
+        academicDescription: 'Formal, scholarly',
+        casualDescription: 'Conversational, friendly',
+        technicalDescription: 'Professional, precise',
+        
         // History
         analysisHistory: 'History',
         view: 'View',
@@ -60,6 +76,13 @@ export const translations = {
         // Tips
         tipCtrlEnter: 'Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze',
         tipCtrlV: 'Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard',
+        
+        // Drag and Drop
+        dragDropImage: 'Drag & drop your image here',
+        dropImageHere: 'Drop your image here!',
+        dragDropDocument: 'Drag & drop or click to upload',
+        dropDocumentHere: 'Drop your document here!',
+        or: 'or',
         
         // Results
         summary: 'Summary',
@@ -134,6 +157,22 @@ export const translations = {
         summaryLength: 'Longitud del Resumen',
         analysisStyle: 'Estilo de Análisis',
         
+        // Summary Length Options
+        short: 'Corto',
+        medium: 'Medio',
+        long: 'Largo',
+        shortDescription: 'Resumen conciso',
+        mediumDescription: 'Detalle equilibrado',
+        longDescription: 'Análisis completo',
+        
+        // Analysis Style Options
+        academic: 'Académico',
+        casual: 'Casual',
+        technical: 'Técnico',
+        academicDescription: 'Formal, erudito',
+        casualDescription: 'Conversacional, amigable',
+        technicalDescription: 'Profesional, preciso',
+        
         // History
         analysisHistory: 'Historial',
         view: 'Ver',
@@ -149,6 +188,13 @@ export const translations = {
         // Tips
         tipCtrlEnter: 'Consejo: Presione Ctrl+Enter (Cmd+Enter en Mac) para analizar',
         tipCtrlV: 'Consejo: Presione Ctrl+V (Cmd+V en Mac) para pegar una imagen desde el portapapeles',
+        
+        // Drag and Drop
+        dragDropImage: 'Arrastra y suelta tu imagen aquí',
+        dropImageHere: '¡Suelta tu imagen aquí!',
+        dragDropDocument: 'Arrastra y suelta o haz clic para subir',
+        dropDocumentHere: '¡Suelta tu documento aquí!',
+        or: 'o',
         
         // Results
         summary: 'Resumen',
@@ -223,6 +269,22 @@ export const translations = {
         summaryLength: 'Zusammenfassungslänge',
         analysisStyle: 'Analysestil',
         
+        // Summary Length Options
+        short: 'Kurz',
+        medium: 'Mittel',
+        long: 'Lang',
+        shortDescription: 'Kurze Übersicht',
+        mediumDescription: 'Ausgewogenes Detail',
+        longDescription: 'Umfassende Analyse',
+        
+        // Analysis Style Options
+        academic: 'Akademisch',
+        casual: 'Lässig',
+        technical: 'Technisch',
+        academicDescription: 'Formal, wissenschaftlich',
+        casualDescription: 'Gesprächig, freundlich',
+        technicalDescription: 'Professionell, präzise',
+        
         // History
         analysisHistory: 'Verlauf',
         view: 'Ansehen',
@@ -238,6 +300,13 @@ export const translations = {
         // Tips
         tipCtrlEnter: 'Tipp: Drücken Sie Strg+Enter (Cmd+Enter auf Mac) zum Analysieren',
         tipCtrlV: 'Tipp: Drücken Sie Strg+V (Cmd+V auf Mac), um ein Bild aus der Zwischenablage einzufügen',
+        
+        // Drag and Drop
+        dragDropImage: 'Bild hierher ziehen und ablegen',
+        dropImageHere: 'Bild hier ablegen!',
+        dragDropDocument: 'Ziehen und ablegen oder klicken zum Hochladen',
+        dropDocumentHere: 'Dokument hier ablegen!',
+        or: 'oder',
         
         // Results
         summary: 'Zusammenfassung',
@@ -312,6 +381,22 @@ export const translations = {
         summaryLength: 'Longueur du Résumé',
         analysisStyle: 'Style d\'Analyse',
         
+        // Summary Length Options
+        short: 'Court',
+        medium: 'Moyen',
+        long: 'Long',
+        shortDescription: 'Aperçu concis',
+        mediumDescription: 'Détail équilibré',
+        longDescription: 'Analyse complète',
+        
+        // Analysis Style Options
+        academic: 'Académique',
+        casual: 'Décontracté',
+        technical: 'Technique',
+        academicDescription: 'Formel, savant',
+        casualDescription: 'Conversationnel, amical',
+        technicalDescription: 'Professionnel, précis',
+        
         // History
         analysisHistory: 'Historique',
         view: 'Voir',
@@ -327,6 +412,13 @@ export const translations = {
         // Tips
         tipCtrlEnter: 'Astuce: Appuyez sur Ctrl+Entrée (Cmd+Entrée sur Mac) pour analyser',
         tipCtrlV: 'Astuce: Appuyez sur Ctrl+V (Cmd+V sur Mac) pour coller une image du presse-papiers',
+        
+        // Drag and Drop
+        dragDropImage: 'Glissez et déposez votre image ici',
+        dropImageHere: 'Déposez votre image ici !',
+        dragDropDocument: 'Glissez et déposez ou cliquez pour télécharger',
+        dropDocumentHere: 'Déposez votre document ici !',
+        or: 'ou',
         
         // Results
         summary: 'Résumé',
@@ -401,6 +493,22 @@ export const translations = {
         summaryLength: 'Długość Podsumowania',
         analysisStyle: 'Styl Analizy',
         
+        // Summary Length Options
+        short: 'Krótki',
+        medium: 'Średni',
+        long: 'Długi',
+        shortDescription: 'Zwięzły przegląd',
+        mediumDescription: 'Zrównoważony szczegół',
+        longDescription: 'Kompleksowa analiza',
+        
+        // Analysis Style Options
+        academic: 'Akademicki',
+        casual: 'Swobodny',
+        technical: 'Techniczny',
+        academicDescription: 'Formalny, naukowy',
+        casualDescription: 'Konwersacyjny, przyjazny',
+        technicalDescription: 'Profesjonalny, precyzyjny',
+        
         // History
         analysisHistory: 'Historia',
         view: 'Zobacz',
@@ -416,6 +524,13 @@ export const translations = {
         // Tips
         tipCtrlEnter: 'Wskazówka: Naciśnij Ctrl+Enter (Cmd+Enter na Mac), aby analizować',
         tipCtrlV: 'Wskazówka: Naciśnij Ctrl+V (Cmd+V na Mac), aby wkleić obraz ze schowka',
+        
+        // Drag and Drop
+        dragDropImage: 'Przeciągnij i upuść obraz tutaj',
+        dropImageHere: 'Upuść obraz tutaj!',
+        dragDropDocument: 'Przeciągnij i upuść lub kliknij, aby przesłać',
+        dropDocumentHere: 'Upuść dokument tutaj!',
+        or: 'lub',
         
         // Results
         summary: 'Podsumowanie',

@@ -445,19 +445,10 @@ export default function Home() {
           <h1 className="text-5xl md:text-6xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 dark:from-blue-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent mb-4 tracking-tight">
             {t.title}
           </h1>
-          <p className="text-xl text-zinc-700 dark:text-zinc-300 font-medium max-w-2xl mx-auto">
-            {t.subtitle}
-          </p>
-          <p className="text-sm text-zinc-600 dark:text-zinc-400 mt-3 flex items-center justify-center gap-2">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span>{t.pasteImageTip} • Paste documents with Ctrl+V</span>
-          </p>
         </div>
 
         {/* Input Section */}
-        <div className="w-4/5 max-w-4/5 mx-auto">
+        <div className="w-90% max-w-5xl mx-auto">
           <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-2xl shadow-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-8 mb-10 animate-scaleIn">
           {/* Mode Selector Tabs */}
           <div className="mb-8">
@@ -579,10 +570,10 @@ export default function Home() {
                       ? 'text-purple-700 dark:text-purple-300' 
                       : 'text-zinc-700 dark:text-zinc-300'
                   }`}>
-                    {isDraggingImage ? 'Drop your image here!' : 'Drag & drop your image here'}
+                    {isDraggingImage ? t.dropImageHere : t.dragDropImage}
                   </p>
                   <p className="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                    or
+                    {t.or}
                   </p>
                 </div>
               </div>
@@ -711,7 +702,7 @@ export default function Home() {
                           ? 'text-pink-700 dark:text-pink-300' 
                           : 'text-zinc-700 dark:text-zinc-300 group-hover:text-pink-600 dark:group-hover:text-pink-400'
                       }`}>
-                        {isDraggingDocument ? 'Drop your document here!' : 'Drag & drop or click to upload'}
+                        {isDraggingDocument ? t.dropDocumentHere : t.dragDropDocument}
                       </p>
                       <p className={`text-sm transition-colors duration-300 ${
                         isDraggingDocument 
