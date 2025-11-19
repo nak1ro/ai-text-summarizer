@@ -338,6 +338,7 @@ Your goals:
 2. Extract the most important key points as bullet list items.
 3. Give a simple, easy-to-understand explanation of the text, written in plain language so that anyone can understand it.
 4. Estimate the reading time in minutes (round up to the nearest whole number).
+5. Assess the reading difficulty level similar to Flesch-Kincaid readability scores. Provide a grade level (e.g., "5th grade", "8th grade", "College level") followed by a brief descriptor in parentheses (e.g., "easy to understand", "moderately complex", "advanced", "very simple").
 
 Follow these rules:
 - The output MUST be valid JSON.
@@ -347,6 +348,7 @@ Follow these rules:
 - The explanation must remain simple and beginner-friendly.
 - Key points must be a clean array of strings.
 - For reading_time_minutes, output only a number.
+- For reading_level, provide format like: "7th grade (easy to understand)" or "College level (advanced)"
 - If the input is unclear or incomplete, interpret it reasonably.
 
 Expected JSON structure:
@@ -354,7 +356,8 @@ Expected JSON structure:
   "summary": "...",
   "key_points": ["...", "...", "..."],
   "explanation": "...",
-  "reading_time_minutes": 4
+  "reading_time_minutes": 4,
+  "reading_level": "7th grade (easy to understand)"
 }
 
 Now analyze the following text:
@@ -392,6 +395,7 @@ ${text}`;
         // Fallback to calculated reading time if AI doesn't provide it
         const readingTime = parsedResponse.reading_time_minutes || calculateReadingTime(text);
         const wordCount = countWords(text);
+        const readingLevel = parsedResponse.reading_level || 'General audience';
 
         const result: AnalysisResult = {
             summary: parsedResponse.summary || 'No summary available',
@@ -401,6 +405,7 @@ ${text}`;
             explanation: parsedResponse.explanation || 'No explanation available',
             readingTime,
             wordCount,
+            readingLevel,
         };
 
         return NextResponse.json<AnalyzeResponse>(

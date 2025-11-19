@@ -113,7 +113,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                     </svg>
                 }
             >
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-3 gap-6">
                     <div className="relative overflow-hidden bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 p-6 rounded-xl border border-green-200/50 dark:border-green-800/50">
                         <div className="relative z-10">
                             <div className="flex items-baseline gap-3 mb-2">
@@ -146,6 +146,20 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                             </p>
                         </div>
                         <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-emerald-400/20 dark:bg-emerald-600/20 rounded-full blur-2xl"></div>
+                    </div>
+                    
+                    <div className="relative overflow-hidden bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-950/20 dark:to-cyan-950/20 p-6 rounded-xl border border-teal-200/50 dark:border-teal-800/50">
+                        <div className="relative z-10">
+                            <div className="mb-2">
+                                <span className="text-2xl font-black bg-gradient-to-r from-teal-600 to-cyan-600 dark:from-teal-400 dark:to-cyan-400 bg-clip-text text-transparent block leading-tight">
+                                    {result.readingLevel}
+                                </span>
+                            </div>
+                            <p className="text-sm font-medium text-teal-600 dark:text-teal-400">
+                                Reading Level
+                            </p>
+                        </div>
+                        <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-teal-400/20 dark:bg-teal-600/20 rounded-full blur-2xl"></div>
                     </div>
                 </div>
             </ResultCard>

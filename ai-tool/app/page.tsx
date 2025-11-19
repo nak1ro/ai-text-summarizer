@@ -16,16 +16,35 @@ export default function Home() {
   const {t} = useTranslation();
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [text, setText] = useState('');
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  
+  // Store results per mode
+  const [results, setResults] = useState<Record<InputMode, AnalysisResult | null>>({
+    text: null,
+    image: null,
+    document: null,
+    youtube: null,
+  });
+  
+  // Store extracted text per mode
+  const [extractedTexts, setExtractedTexts] = useState<Record<InputMode, string | null>>({
+    text: null,
+    image: null,
+    document: null,
+    youtube: null,
+  });
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageBase64, setImageBase64] = useState<string | null>(null);
-  const [extractedText, setExtractedText] = useState<string | null>(null);
   const [youtubeUrl, setYoutubeUrl] = useState('');
   const [documentFile, setDocumentFile] = useState<File | null>(null);
   const [isDraggingImage, setIsDraggingImage] = useState(false);
   const [isDraggingDocument, setIsDraggingDocument] = useState(false);
+  
+  // Get current mode's result and extracted text
+  const result = results[inputMode];
+  const extractedText = extractedTexts[inputMode];
 
   const processImageFile = (file: File) => {
     // Validate file type
@@ -47,7 +66,6 @@ export default function Home() {
       setImagePreview(base64String);
       setImageBase64(base64String);
       setText(''); // Clear text input when image is uploaded
-      setExtractedText(null);
       setError(null);
     };
     reader.readAsDataURL(file);
@@ -84,13 +102,15 @@ export default function Home() {
   const handleRemoveImage = () => {
     setImagePreview(null);
     setImageBase64(null);
-    setExtractedText(null);
+    // Clear image mode's result and extracted text
+    setResults(prev => ({ ...prev, image: null }));
+    setExtractedTexts(prev => ({ ...prev, image: null }));
   };
 
   const handleModeChange = (mode: InputMode) => {
     setInputMode(mode);
     setError(null);
-    setResult(null);
+    // Don't clear results anymore - they're preserved per mode
     // Clear other inputs when switching modes
     if (mode !== 'text') setText('');
     if (mode !== 'image') {
@@ -184,7 +204,6 @@ export default function Home() {
           setImageBase64(base64String);
           setInputMode('image'); // Switch to image mode
           setText(''); // Clear text input when image is pasted
-          setExtractedText(null);
           setError(null);
         };
         reader.readAsDataURL(file);
@@ -212,10 +231,12 @@ export default function Home() {
   };
 
   const handleAnalyze = async () => {
-    // Reset states
+    // Reset error but keep results for other modes
     setError(null);
-    setResult(null);
-    setExtractedText(null);
+    
+    // Clear current mode's result and extracted text
+    setResults(prev => ({ ...prev, [inputMode]: null }));
+    setExtractedTexts(prev => ({ ...prev, [inputMode]: null }));
 
     // Validate input
     if (!text.trim() && !imageBase64 && !documentFile && !youtubeUrl.trim()) {
@@ -280,9 +301,12 @@ export default function Home() {
         throw new Error(data.error || 'Analysis failed');
       }
 
-      setResult(data.data);
+      // Store result for current mode
+      setResults(prev => ({ ...prev, [inputMode]: data.data }));
+      
+      // Store extracted text for current mode if available
       if (data.extractedText) {
-        setExtractedText(data.extractedText);
+        setExtractedTexts(prev => ({ ...prev, [inputMode]: data.extractedText }));
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unexpected error occurred');

@@ -5,6 +5,7 @@ export interface AnalysisResult {
   explanation: string;
   readingTime: number; // in minutes
   wordCount: number; // total words in the text
+  readingLevel: string; // e.g., "7th grade (easy to understand)"
 }
 
 // API request body

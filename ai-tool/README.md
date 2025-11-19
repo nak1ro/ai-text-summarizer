@@ -33,7 +33,7 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
   - Concise Summary
   - Key Points (bullet list)
   - Simple Explanation (ELI5-style)
-  - Reading Time & Stats (estimated time + word count)
+  - Reading Time & Stats (estimated time + word count + reading level)
 - **🎨 Modern UI**: Clean, responsive design with light/dark mode toggle
   - Manual theme switcher in the header
   - Automatic system preference detection
@@ -166,7 +166,8 @@ Analyzes text or extracts and analyzes text from images.
     ],
     "explanation": "Simple explanation of the content",
     "readingTime": 3,
-    "wordCount": 542
+    "wordCount": 542,
+    "readingLevel": "7th grade (easy to understand)"
   },
   "extractedText": "Text extracted from image (only if image was uploaded)"
 }
