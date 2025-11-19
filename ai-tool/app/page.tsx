@@ -628,29 +628,6 @@ export default function Home() {
                   alt="Preview"
                   className="max-w-full max-h-64 rounded-2xl border-2 border-zinc-300 dark:border-zinc-700 shadow-lg transition-transform duration-300 group-hover:scale-[1.02]"
                 />
-                <IconButton
-                  onClick={handleRemoveImage}
-                  disabled={loading}
-                  variant="danger"
-                  size="sm"
-                  className="absolute top-3 right-3 hover:scale-110"
-                  title="Remove image"
-                  icon={
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  }
-                />
               </div>
               {extractedText && (
                 <div className="mt-4 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl shadow-md">

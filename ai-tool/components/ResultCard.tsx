@@ -21,7 +21,7 @@ export function ResultCard({title, icon, children, className = '', accentColor =
 
     return (
         <div
-            className={`group relative bg-white dark:bg-zinc-900/80 rounded-2xl shadow-lg border border-zinc-200/50 dark:border-zinc-800/50 p-7 transition-all duration-500 hover:shadow-2xl hover:-translate-y-1 backdrop-blur-sm overflow-hidden ${className}`}
+            className={`group relative bg-white dark:bg-zinc-900/80 rounded-2xl shadow-lg border border-zinc-200/50 dark:border-zinc-800/50 p-7 transition-all duration-500 hover:shadow-2xl backdrop-blur-sm overflow-hidden ${className}`}
         >
             {/* Gradient Background on Hover */}
             <div className={`absolute inset-0 bg-gradient-to-br ${gradientColors} opacity-0 group-hover:opacity-5 dark:group-hover:opacity-10 transition-opacity duration-500`}></div>
