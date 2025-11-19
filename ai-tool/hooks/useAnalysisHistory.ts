@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { AnalysisHistoryEntry, AnalysisResult, AnalysisSettings, InputMode } from '@/types';
+import { getStorageItem, setStorageItem } from '@/lib/storage';
 
 const STORAGE_KEY = 'analysisHistory';
 const MAX_HISTORY_ENTRIES = 50; // Limit history size
@@ -41,25 +42,14 @@ export function useAnalysisHistory(): UseAnalysisHistoryReturn {
 
   // Load history from localStorage on mount
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          setHistory(parsed);
-        }
-      }
-    } catch (error) {
-      console.error('Failed to load analysis history:', error);
-    }
+    const stored = getStorageItem<AnalysisHistoryEntry[]>(STORAGE_KEY, []);
+    setHistory(stored);
   }, []);
 
   // Save history to localStorage whenever it changes
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-    } catch (error) {
-      console.error('Failed to save analysis history:', error);
+    if (history.length > 0 || history.length === 0) {
+      setStorageItem(STORAGE_KEY, history);
     }
   }, [history]);
 

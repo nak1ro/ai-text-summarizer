@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { getStorageItem, setStorageItem } from '@/lib/storage';
 
 export type SummaryLength = 'short' | 'medium' | 'long';
 export type AnalysisStyle = 'academic' | 'casual' | 'technical';
@@ -41,20 +42,15 @@ export function AnalysisSettings({ settings, onSettingsChange, disabled = false 
 
   // Load settings from localStorage on mount
   useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = getStorageItem<AnalysisSettings | null>(STORAGE_KEY, null);
     if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        onSettingsChange(parsed);
-      } catch {
-        // Ignore parse errors
-      }
+      onSettingsChange(saved);
     }
   }, [onSettingsChange]);
 
   // Save settings to localStorage when they change
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    setStorageItem(STORAGE_KEY, settings);
   }, [settings]);
 
   const handleSummaryLengthChange = (length: SummaryLength) => {

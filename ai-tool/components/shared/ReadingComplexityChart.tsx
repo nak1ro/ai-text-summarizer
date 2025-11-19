@@ -88,7 +88,7 @@ export function ReadingComplexityChart({ readingLevel }: ReadingComplexityChartP
     { label: t.elementary, shortLabel: t.elemShort, min: 0, max: 5, color: 'from-green-500 to-emerald-500', bgColor: 'bg-green-500/10 dark:bg-green-500/20' },
     { label: t.middleSchool, shortLabel: t.middleShort, min: 6, max: 8, color: 'from-blue-500 to-cyan-500', bgColor: 'bg-blue-500/10 dark:bg-blue-500/20' },
     { label: t.highSchool, shortLabel: t.highShort, min: 9, max: 12, color: 'from-yellow-500 to-orange-500', bgColor: 'bg-orange-500/10 dark:bg-orange-500/20' },
-    { label: t.college, shortLabel: t.college, min: 13, max: 16, color: 'from-orange-500 to-red-500', bgColor: 'bg-red-500/10 dark:bg-red-500/20' },
+    { label: t.college, shortLabel: t.collegeShort, min: 13, max: 16, color: 'from-orange-500 to-red-500', bgColor: 'bg-red-500/10 dark:bg-red-500/20' },
     { label: t.graduate, shortLabel: t.gradShort, min: 17, max: 20, color: 'from-red-600 to-purple-600', bgColor: 'bg-purple-500/10 dark:bg-purple-500/20' },
   ];
   

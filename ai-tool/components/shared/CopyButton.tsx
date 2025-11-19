@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface CopyButtonProps {
   text: string;
@@ -13,18 +14,7 @@ interface CopyButtonProps {
 export function CopyButton({ text, label, className = '', onCopy }: CopyButtonProps) {
   const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const isMobile = useMobileDetection();
 
   const handleCopy = async () => {
     try {

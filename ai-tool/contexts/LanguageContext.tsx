@@ -1,6 +1,7 @@
 'use client';
 
 import React, {createContext, useContext, useEffect, useState} from 'react';
+import { getStorageItem, setStorageItem } from '@/lib/storage';
 
 export type Language = 'en' | 'es' | 'de' | 'fr' | 'pl';
 
@@ -17,7 +18,7 @@ export function LanguageProvider({children}: {children: React.ReactNode}) {
     useEffect(() => {
         // Check localStorage first, then browser language
         if (typeof window !== 'undefined') {
-            const savedLang = localStorage.getItem('language') as Language | null;
+            const savedLang = getStorageItem<Language | null>('language', null);
             if (savedLang) {
                 setLanguageState(savedLang);
             } else {
@@ -34,7 +35,7 @@ export function LanguageProvider({children}: {children: React.ReactNode}) {
     const setLanguage = (lang: Language) => {
         setLanguageState(lang);
         if (typeof window !== 'undefined') {
-            localStorage.setItem('language', lang);
+            setStorageItem('language', lang);
         }
     };
 

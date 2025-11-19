@@ -3,27 +3,7 @@
 import { useState } from 'react';
 import { AnalysisHistoryEntry, InputMode } from '@/types';
 import { useTranslation } from '@/hooks/useTranslation';
-
-// Simple relative time formatter
-function formatRelativeTime(timestamp: number, t: any): string {
-  const now = Date.now();
-  const diff = now - timestamp;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-
-  if (seconds < 60) return t.justNow;
-  if (minutes === 1) return t.minuteAgo;
-  if (minutes < 60) return `${minutes} ${t.minutesAgo}`;
-  if (hours === 1) return t.hourAgo;
-  if (hours < 24) return `${hours} ${t.hoursAgo}`;
-  if (days === 1) return t.dayAgo;
-  if (days < 7) return `${days} ${t.daysAgo}`;
-  
-  const date = new Date(timestamp);
-  return date.toLocaleDateString();
-}
+import { formatRelativeTime } from '@/lib/dateUtils';
 
 interface AnalysisHistoryProps {
   history: AnalysisHistoryEntry[];

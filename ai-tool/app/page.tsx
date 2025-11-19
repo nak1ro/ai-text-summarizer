@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AnalysisResult, AnalysisSettings } from '@/types';
+import { useState } from 'react';
+import { AnalysisResult, AnalysisSettings, InputMode } from '@/types';
 import { AnalysisResults } from '@/components/AnalysisResults';
 import { formatCount } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { LanguageSelector } from '@/components/LanguageSelector';
 import { useTranslation } from '@/hooks/useTranslation';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 import { Button } from '@/components/shared/Button';
 import { ExtractedTextPreview } from '@/components/shared/ExtractedTextPreview';
 import { LoadingSpinner } from '@/components/shared/LoadingSpinner';
@@ -21,8 +22,6 @@ import { AnalysisHistoryEntry } from '@/types';
 import { Sidebar } from '@/components/Sidebar';
 
 const MAX_CHARS = 50000;
-
-type InputMode = 'text' | 'image' | 'document' | 'youtube';
 
 export default function Home() {
   const {t} = useTranslation();
@@ -59,19 +58,7 @@ export default function Home() {
   });
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const { history, addToHistory, removeFromHistory, clearHistory, loadFromHistory } = useAnalysisHistory();
-  const [isMobile, setIsMobile] = useState(false);
-  
-  // Detect mobile devices
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const isMobile = useMobileDetection();
   
   // Get current mode's result and extracted text
   const result = results[inputMode];
