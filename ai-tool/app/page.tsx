@@ -5,12 +5,15 @@ import { AnalysisResult } from '@/types';
 import { AnalysisResults } from '@/components/AnalysisResults';
 import { formatCount } from '@/lib/utils';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { LanguageSelector } from '@/components/LanguageSelector';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const MAX_CHARS = 5000;
 
 type InputMode = 'text' | 'image' | 'document' | 'youtube';
 
 export default function Home() {
+  const {t} = useTranslation();
   const [inputMode, setInputMode] = useState<InputMode>('text');
   const [text, setText] = useState('');
   const [result, setResult] = useState<AnalysisResult | null>(null);
@@ -226,19 +229,20 @@ export default function Home() {
       <main className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 relative">
-          {/* Theme Toggle - Positioned in top right */}
-          <div className="absolute top-0 right-0">
+          {/* Theme Toggle & Language Selector - Positioned in top right */}
+          <div className="absolute top-0 right-0 flex items-center gap-2">
+            <LanguageSelector />
             <ThemeToggle />
           </div>
           
           <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-50 mb-3">
-            AI Text Summarizer
+            {t.title}
           </h1>
           <p className="text-lg text-zinc-600 dark:text-zinc-400">
-            Paste your text or upload an image and get instant AI-powered analysis
+            {t.subtitle}
           </p>
           <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
-            💡 Tip: You can paste images directly with Ctrl+V (Cmd+V on Mac)
+            {t.pasteImageTip}
           </p>
         </div>
 
@@ -259,7 +263,7 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                <span className="hidden sm:inline">Text</span>
+                <span className="hidden sm:inline">{t.textMode}</span>
               </button>
               
               <button
@@ -274,7 +278,7 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span className="hidden sm:inline">Image</span>
+                <span className="hidden sm:inline">{t.imageMode}</span>
               </button>
               
               <button
@@ -289,9 +293,9 @@ export default function Home() {
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
-                <span className="hidden sm:inline">Document</span>
+                <span className="hidden sm:inline">{t.documentMode}</span>
                 <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
-                  Soon
+                  {t.comingSoon.split('!')[0]}
                 </span>
               </button>
               
@@ -308,9 +312,9 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span className="hidden sm:inline">YouTube</span>
+                <span className="hidden sm:inline">{t.youtubeMode}</span>
                 <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-xs font-semibold bg-yellow-400 dark:bg-yellow-500 text-zinc-900 rounded-full">
-                  Soon
+                  {t.comingSoon.split('!')[0]}
                 </span>
               </button>
             </div>
@@ -323,14 +327,14 @@ export default function Home() {
                 htmlFor="text-input"
                 className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2"
               >
-                Your Text
+                {t.yourText}
               </label>
               <textarea
                 id="text-input"
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Paste or type your text here (up to 5,000 characters)..."
+                placeholder={t.textPlaceholder}
                 className="w-full h-64 px-4 py-3 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-600 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none transition-all"
                 disabled={loading}
               />
@@ -341,7 +345,7 @@ export default function Home() {
           {inputMode === 'image' && !imagePreview && (
             <div className="mb-6">
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                Upload or Paste Image
+                {t.uploadOrPasteImage}
               </label>
               <div className="flex items-center gap-4 flex-wrap">
                 <label
@@ -361,7 +365,7 @@ export default function Home() {
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
-                  Choose Image
+                  {t.chooseImage}
                 </label>
                 <input
                   id="image-upload"
@@ -372,7 +376,7 @@ export default function Home() {
                   disabled={loading}
                 />
                 <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                  <span>Upload an image with text (max 5MB)</span>
+                  <span>{t.uploadImageDesc}</span>
                   <span className="hidden sm:inline text-zinc-400 dark:text-zinc-500">•</span>
                   <span className="hidden sm:inline flex items-center gap-1">
                     <kbd className="px-2 py-0.5 bg-zinc-200 dark:bg-zinc-800 rounded text-xs font-mono border border-zinc-300 dark:border-zinc-700">
@@ -389,7 +393,7 @@ export default function Home() {
           {inputMode === 'image' && imagePreview && (
             <div className="mb-6">
               <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                Uploaded Image
+                {t.uploadedImage}
               </label>
               <div className="relative inline-block">
                 <img
@@ -421,7 +425,7 @@ export default function Home() {
               {extractedText && (
                 <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
                   <p className="text-sm font-medium text-blue-900 dark:text-blue-200 mb-1">
-                    Extracted Text:
+                    {t.extractedText}
                   </p>
                   <p className="text-sm text-blue-700 dark:text-blue-300">
                     {extractedText.substring(0, 200)}
@@ -438,7 +442,7 @@ export default function Home() {
               {!documentFile ? (
                 <>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                    Upload Document
+                    {t.uploadDocument}
                   </label>
                   <div className="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
                     <label
@@ -449,10 +453,10 @@ export default function Home() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                       </svg>
                       <p className="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                        Click to upload document
+                        {t.clickToUpload}
                       </p>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                        PDF, DOCX, DOC, or TXT (max 10MB)
+                        {t.documentFormats}
                       </p>
                     </label>
                     <input
@@ -471,10 +475,10 @@ export default function Home() {
                       </svg>
                       <div>
                         <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
-                          Coming Soon!
+                          {t.comingSoon}
                         </h3>
                         <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                          Document text extraction is currently under development. This feature will support PDF, Word, and plain text documents.
+                          {t.documentComingSoonDesc}
                         </p>
                       </div>
                     </div>
@@ -483,7 +487,7 @@ export default function Home() {
               ) : (
                 <div>
                   <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
-                    Uploaded Document
+                    {t.uploadedDocument}
                   </label>
                   <div className="flex items-center gap-3 p-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg">
                     <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -520,7 +524,7 @@ export default function Home() {
                 htmlFor="youtube-input"
                 className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2"
               >
-                YouTube Video URL
+                {t.youtubeUrl}
               </label>
               <input
                 id="youtube-input"
@@ -538,10 +542,10 @@ export default function Home() {
                   </svg>
                   <div>
                     <h3 className="font-semibold text-yellow-900 dark:text-yellow-200">
-                      Coming Soon!
+                      {t.comingSoon}
                     </h3>
                     <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
-                      YouTube transcript extraction is currently under development. This feature will allow you to extract and analyze text from video transcripts automatically.
+                      {t.youtubeComingSoonDesc}
                     </p>
                   </div>
                 </div>
@@ -606,7 +610,7 @@ export default function Home() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Analyzing...
+                  {t.analyzing}
                 </>
               ) : (
                 <>
@@ -623,7 +627,7 @@ export default function Home() {
                       d="M13 10V3L4 14h7v7l9-11h-7z"
                     />
                   </svg>
-                  Analyze
+                  {t.analyze}
                 </>
               )}
             </button>
@@ -631,12 +635,12 @@ export default function Home() {
 
           {inputMode === 'text' && (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze
+              {t.tipCtrlEnter}
             </p>
           )}
           {inputMode === 'image' && !imagePreview && (
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard
+              {t.tipCtrlV}
             </p>
           )}
         </div>
@@ -659,7 +663,7 @@ export default function Home() {
             </svg>
             <div>
               <h3 className="font-semibold text-red-900 dark:text-red-200">
-                Error
+                {t.error}
               </h3>
               <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
             </div>

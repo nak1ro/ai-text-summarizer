@@ -29,6 +29,14 @@ A modern, fast, and beautiful web application that uses AI to analyze and summar
   - Manual theme switcher in the header
   - Automatic system preference detection
   - Theme persists across sessions
+- **🌍 Multi-Language Support**: Available in 5 languages
+  - 🇬🇧 English
+  - 🇪🇸 Spanish (Español)
+  - 🇩🇪 German (Deutsch)
+  - 🇫🇷 French (Français)
+  - 🇵🇱 Polish (Polski)
+  - Automatic browser language detection
+  - Language preference saved to localStorage
 - **💰 Cost-Efficient**: Uses GPT-4o-mini for fast, affordable analysis
 - **⌨️ Keyboard Shortcuts**: Ctrl/Cmd + Enter to analyze
 

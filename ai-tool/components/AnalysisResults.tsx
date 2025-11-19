@@ -3,17 +3,20 @@
 import React from 'react';
 import {AnalysisResult} from '@/types';
 import {ResultCard} from './ResultCard';
+import {useTranslation} from '@/hooks/useTranslation';
 
 interface AnalysisResultsProps {
     result: AnalysisResult;
 }
 
 export function AnalysisResults({result}: AnalysisResultsProps) {
+    const {t} = useTranslation();
+    
     return (
         <div className="w-full max-w-4xl mx-auto space-y-6 animate-fadeIn">
             {/* Summary Card */}
             <ResultCard
-                title="Summary"
+                title={t.summary}
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -35,7 +38,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
 
             {/* Key Points Card */}
             <ResultCard
-                title="Key Points"
+                title={t.keyPoints}
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -67,7 +70,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
 
             {/* Explanation Card */}
             <ResultCard
-                title="Simple Explanation"
+                title={t.simpleExplanation}
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -89,7 +92,7 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
 
             {/* Reading Time Card */}
             <ResultCard
-                title="Reading Time & Stats"
+                title={t.readingTimeStats}
                 icon={
                     <svg
                         className="w-6 h-6"
@@ -113,11 +116,11 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                                 {result.readingTime}
                             </span>
                             <span className="text-lg text-zinc-600 dark:text-zinc-400">
-                                {result.readingTime === 1 ? 'minute' : 'minutes'}
+                                {result.readingTime === 1 ? t.minute : t.minutes}
                             </span>
                         </div>
                         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                            Estimated reading time
+                            {t.estimatedReadingTime}
                         </p>
                     </div>
                     
@@ -127,11 +130,11 @@ export function AnalysisResults({result}: AnalysisResultsProps) {
                                 {result.wordCount.toLocaleString()}
                             </span>
                             <span className="text-base text-zinc-600 dark:text-zinc-400">
-                                {result.wordCount === 1 ? 'word' : 'words'}
+                                {result.wordCount === 1 ? t.word : t.words}
                             </span>
                         </div>
                         <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
-                            Total word count
+                            {t.totalWordCount}
                         </p>
                     </div>
                 </div>
