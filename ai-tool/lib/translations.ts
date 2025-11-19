@@ -45,6 +45,13 @@ export const translations = {
         summaryLength: 'Summary Length',
         analysisStyle: 'Analysis Style',
         
+        // History
+        analysisHistory: 'History',
+        view: 'View',
+        clearHistory: 'Clear All',
+        noHistory: 'No analysis history yet',
+        noHistoryDesc: 'Your analyses will appear here after you run them',
+        
         // Tips
         tipCtrlEnter: 'Tip: Press Ctrl+Enter (Cmd+Enter on Mac) to analyze',
         tipCtrlV: 'Tip: Press Ctrl+V (Cmd+V on Mac) to paste an image from clipboard',
@@ -121,6 +128,13 @@ export const translations = {
         analysisSettings: 'Configuración de Análisis',
         summaryLength: 'Longitud del Resumen',
         analysisStyle: 'Estilo de Análisis',
+        
+        // History
+        analysisHistory: 'Historial',
+        view: 'Ver',
+        clearHistory: 'Limpiar Todo',
+        noHistory: 'Aún no hay historial de análisis',
+        noHistoryDesc: 'Tus análisis aparecerán aquí después de ejecutarlos',
         
         // Tips
         tipCtrlEnter: 'Consejo: Presione Ctrl+Enter (Cmd+Enter en Mac) para analizar',
@@ -199,6 +213,13 @@ export const translations = {
         summaryLength: 'Zusammenfassungslänge',
         analysisStyle: 'Analysestil',
         
+        // History
+        analysisHistory: 'Verlauf',
+        view: 'Ansehen',
+        clearHistory: 'Alle löschen',
+        noHistory: 'Noch kein Analyseverlauf',
+        noHistoryDesc: 'Ihre Analysen werden hier angezeigt, nachdem Sie sie ausgeführt haben',
+        
         // Tips
         tipCtrlEnter: 'Tipp: Drücken Sie Strg+Enter (Cmd+Enter auf Mac) zum Analysieren',
         tipCtrlV: 'Tipp: Drücken Sie Strg+V (Cmd+V auf Mac), um ein Bild aus der Zwischenablage einzufügen',
@@ -276,6 +297,13 @@ export const translations = {
         summaryLength: 'Longueur du Résumé',
         analysisStyle: 'Style d\'Analyse',
         
+        // History
+        analysisHistory: 'Historique',
+        view: 'Voir',
+        clearHistory: 'Tout effacer',
+        noHistory: 'Aucun historique d\'analyse pour le moment',
+        noHistoryDesc: 'Vos analyses apparaîtront ici après les avoir exécutées',
+        
         // Tips
         tipCtrlEnter: 'Astuce: Appuyez sur Ctrl+Entrée (Cmd+Entrée sur Mac) pour analyser',
         tipCtrlV: 'Astuce: Appuyez sur Ctrl+V (Cmd+V sur Mac) pour coller une image du presse-papiers',
@@ -352,6 +380,13 @@ export const translations = {
         analysisSettings: 'Ustawienia Analizy',
         summaryLength: 'Długość Podsumowania',
         analysisStyle: 'Styl Analizy',
+        
+        // History
+        analysisHistory: 'Historia',
+        view: 'Zobacz',
+        clearHistory: 'Wyczyść Wszystko',
+        noHistory: 'Brak historii analiz',
+        noHistoryDesc: 'Twoje analizy pojawią się tutaj po ich wykonaniu',
         
         // Tips
         tipCtrlEnter: 'Wskazówka: Naciśnij Ctrl+Enter (Cmd+Enter na Mac), aby analizować',

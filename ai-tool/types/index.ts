@@ -21,6 +21,25 @@ export interface AnalysisSettings {
   analysisStyle: AnalysisStyle;
 }
 
+// Input mode type
+export type InputMode = 'text' | 'image' | 'document' | 'youtube';
+
+// History entry
+export interface AnalysisHistoryEntry {
+  id: string;
+  timestamp: number; // Date.now()
+  inputMode: InputMode;
+  input: {
+    text?: string;
+    imagePreview?: string; // Base64 preview for images
+    documentName?: string;
+    youtubeUrl?: string;
+  };
+  settings: AnalysisSettings;
+  result: AnalysisResult;
+  extractedText?: string;
+}
+
 // API request body
 export interface AnalyzeRequest {
   text?: string;
@@ -39,4 +58,3 @@ export interface AnalyzeResponse {
   error?: string;
   extractedText?: string; // Text extracted from image
 }
-

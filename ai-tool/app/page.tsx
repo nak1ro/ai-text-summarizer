@@ -15,6 +15,9 @@ import { useErrorHandler } from '@/hooks/useErrorHandler';
 import { ValidationError, FileError } from '@/lib/errors';
 import { ERROR_MESSAGES } from '@/lib/errorMessages';
 import { AnalysisSettings as AnalysisSettingsComponent } from '@/components/AnalysisSettings';
+import { useAnalysisHistory } from '@/hooks/useAnalysisHistory';
+import { AnalysisHistory } from '@/components/AnalysisHistory';
+import { AnalysisHistoryEntry } from '@/types';
 
 const MAX_CHARS = 50000;
 
@@ -53,6 +56,8 @@ export default function Home() {
     summaryLength: 'medium',
     analysisStyle: 'casual',
   });
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const { history, addToHistory, removeFromHistory, clearHistory, loadFromHistory } = useAnalysisHistory();
   
   // Get current mode's result and extracted text
   const result = results[inputMode];
@@ -337,6 +342,20 @@ export default function Home() {
       if (data.extractedText) {
         setExtractedTexts(prev => ({ ...prev, [inputMode]: data.extractedText }));
       }
+
+      // Save to history
+      addToHistory(
+        inputMode,
+        {
+          text: inputMode === 'text' ? text : undefined,
+          imagePreview: inputMode === 'image' ? (imageBase64 || undefined) : undefined,
+          documentName: inputMode === 'document' ? documentFile?.name : undefined,
+          youtubeUrl: inputMode === 'youtube' ? youtubeUrl : undefined,
+        },
+        analysisSettings,
+        data.data,
+        data.extractedText
+      );
     } catch (err) {
       handleError(err);
     } finally {
@@ -349,6 +368,45 @@ export default function Home() {
     if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
       handleAnalyze();
     }
+  };
+
+  const handleLoadFromHistory = (entry: AnalysisHistoryEntry) => {
+    const loaded = loadFromHistory(entry);
+    
+    // Set input mode
+    setInputMode(loaded.inputMode);
+    
+    // Set input data
+    if (loaded.inputMode === 'text' && loaded.input.text) {
+      setText(loaded.input.text);
+    } else if (loaded.inputMode === 'image' && loaded.input.imagePreview) {
+      setImagePreview(loaded.input.imagePreview);
+      setImageBase64(loaded.input.imagePreview);
+    } else if (loaded.inputMode === 'youtube' && loaded.input.youtubeUrl) {
+      setYoutubeUrl(loaded.input.youtubeUrl);
+    }
+    // Note: Documents can't be restored from history since we only store the name
+    
+    // Set settings
+    setAnalysisSettings(loaded.settings);
+    
+    // Set results
+    setResults(prev => ({ ...prev, [loaded.inputMode]: loaded.result }));
+    
+    if (loaded.extractedText) {
+      setExtractedTexts(prev => ({ ...prev, [loaded.inputMode]: loaded.extractedText }));
+    }
+    
+    // Close history modal
+    setIsHistoryOpen(false);
+    
+    // Scroll to results
+    setTimeout(() => {
+      const resultsElement = document.getElementById('analysis-results');
+      if (resultsElement) {
+        resultsElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   const charCount = text.length;
@@ -377,6 +435,21 @@ export default function Home() {
         <div className="text-center mb-10 relative animate-fadeIn">
           {/* Theme Toggle & Language Selector - Positioned in top right */}
           <div className="absolute top-0 right-0 flex items-center gap-3">
+            <button
+              onClick={() => setIsHistoryOpen(true)}
+              className="px-4 py-2 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl text-zinc-700 dark:text-zinc-300 rounded-xl border border-zinc-200 dark:border-zinc-700 hover:bg-white dark:hover:bg-zinc-800 transition-all duration-300 flex items-center gap-2 shadow-sm hover:shadow-md"
+              title={t.analysisHistory || 'View analysis history'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="hidden sm:inline font-semibold">{t.analysisHistory || 'History'}</span>
+              {history.length > 0 && (
+                <span className="px-2 py-0.5 text-xs font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full">
+                  {history.length}
+                </span>
+              )}
+            </button>
             <LanguageSelector />
             <ThemeToggle />
           </div>
@@ -827,8 +900,20 @@ export default function Home() {
         )}
 
         {/* Results */}
-        {result && <AnalysisResults result={result} />}
+        <div id="analysis-results">
+          {result && <AnalysisResults result={result} />}
+        </div>
       </main>
+
+      {/* History Modal */}
+      <AnalysisHistory
+        history={history}
+        onLoadEntry={handleLoadFromHistory}
+        onDeleteEntry={removeFromHistory}
+        onClearHistory={clearHistory}
+        isOpen={isHistoryOpen}
+        onClose={() => setIsHistoryOpen(false)}
+      />
     </div>
   );
 }
