@@ -1,10 +1,7 @@
-/**
- * Client-side Error Handler Hook
- * Provides consistent error handling for React components
- */
+// Client-side error handler hook. Provides consistent error handling for React components.
 
 import { useState, useCallback } from 'react';
-import { AppError, normalizeError, extractErrorMessage, logError, ErrorHandlerOptions } from '@/lib/errors';
+import { extractErrorMessage, logError, ErrorHandlerOptions } from '@/lib/errors';
 
 export interface UseErrorHandlerReturn {
   error: string | null;
@@ -14,34 +11,40 @@ export interface UseErrorHandlerReturn {
   hasError: boolean;
 }
 
-/**
- * Hook for managing errors in React components
- * Provides consistent error handling and state management
- */
+// Hook for managing errors in React components. Provides consistent error handling and state management.
 export function useErrorHandler(options: ErrorHandlerOptions = {}): UseErrorHandlerReturn {
   const [error, setErrorState] = useState<string | null>(null);
 
+  const mergeOptions = useCallback(
+      (customOptions?: ErrorHandlerOptions): ErrorHandlerOptions => ({
+        ...options,
+        ...customOptions,
+      }),
+      [options]
+  );
+
+  const shouldLogError = useCallback((): boolean => process.env.NODE_ENV === 'development', []);
+
   const handleError = useCallback(
-    (error: unknown, customOptions?: ErrorHandlerOptions) => {
-      const mergedOptions = { ...options, ...customOptions };
-      const errorMessage = extractErrorMessage(error);
-      
-      // Log error in development
-      if (process.env.NODE_ENV === 'development') {
-        logError(error, mergedOptions);
-      }
-      
-      setErrorState(errorMessage);
-    },
-    [options]
+      (errorInput: unknown, customOptions?: ErrorHandlerOptions) => {
+        const mergedOptions = mergeOptions(customOptions);
+        const errorMessage = extractErrorMessage(errorInput);
+
+        if (shouldLogError()) {
+          logError(errorInput, mergedOptions);
+        }
+
+        setErrorState(errorMessage);
+      },
+      [mergeOptions, shouldLogError]
   );
 
   const clearError = useCallback(() => {
     setErrorState(null);
   }, []);
 
-  const setError = useCallback((error: string | null) => {
-    setErrorState(error);
+  const setError = useCallback((value: string | null) => {
+    setErrorState(value);
   }, []);
 
   return {
@@ -52,4 +55,3 @@ export function useErrorHandler(options: ErrorHandlerOptions = {}): UseErrorHand
     hasError: error !== null,
   };
 }
-

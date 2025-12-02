@@ -1,8 +1,14 @@
 import {NextRequest, NextResponse} from 'next/server';
 import OpenAI from 'openai';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 import mammoth from 'mammoth';
-import {AnalyzeRequest, AnalyzeResponse, AnalysisResult, SummaryLength, AnalysisStyle} from '@/types';
+import {
+    AnalyzeRequest,
+    AnalyzeResponse,
+    AnalysisResult,
+    SummaryLength,
+    AnalysisStyle,
+} from '@/types';
 import {
     calculateReadingTime,
     calculateSpeakingTime,
@@ -16,12 +22,10 @@ import {
     ValidationError,
     NetworkError,
     ApiError,
-    FileError,
-    normalizeError,
+    FileError
 } from '@/lib/errors';
 import {ERROR_MESSAGES} from '@/lib/errorMessages';
-
-const {PdfReader} = require('pdfreader');
+import {PdfReader} from 'pdfreader';
 
 const MAX_CHARS = 50000;
 const YOUTUBE_REGEX =
@@ -31,36 +35,73 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-async function fetchYouTubeTranscript(youtubeUrl: string): Promise<string> {
-    const match = youtubeUrl.match(YOUTUBE_REGEX);
+type AiAnalysisResponse = {
+    summary?: string;
+    key_points?: string[];
+    explanation?: string;
+    reading_time_minutes?: number;
+    reading_level?: string;
+};
+
+type TextSourceResult = {
+    text: string;
+    extractedText?: string;
+};
+
+function getYouTubeVideoId(url: string): string {
+    const match = url.match(YOUTUBE_REGEX);
     if (!match) {
         throw new ValidationError(ERROR_MESSAGES.YOUTUBE.INVALID_URL);
     }
+    return match[4];
+}
 
+function handleSearchApiAxiosError(error: AxiosError): never {
+    if (error.code === 'ECONNABORTED') {
+        throw new NetworkError(ERROR_MESSAGES.YOUTUBE.TIMEOUT, error);
+    }
+
+    const status = error.response?.status;
+    const apiError = (error.response?.data as { error?: string } | undefined)?.error;
+
+    if (status === 401) {
+        throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_INVALID_KEY, error, 500);
+    }
+
+    if (status === 403) {
+        throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_ACCESS_DENIED, error, 500);
+    }
+
+    if (apiError) {
+        throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_ERROR(apiError), error, 500);
+    }
+
+    throw new NetworkError(ERROR_MESSAGES.YOUTUBE.FETCH_FAILED, error);
+}
+
+async function fetchYouTubeTranscript(youtubeUrl: string): Promise<string> {
     const apiKey = requireEnvVar('SEARCHAPI_API_KEY');
-
-    const videoId = match[4];
+    const videoId = getYouTubeVideoId(youtubeUrl);
 
     try {
-        const searchApiResponse = await axios.get(
-            'https://www.searchapi.io/api/v1/search',
-            {
-                params: {
-                    engine: 'youtube_transcripts',
-                    video_id: videoId,
-                    api_key: apiKey,
-                },
-                timeout: 30000,
-            }
-        );
+        const searchApiResponse = await axios.get('https://www.searchapi.io/api/v1/search', {
+            params: {
+                engine: 'youtube_transcripts',
+                video_id: videoId,
+                api_key: apiKey,
+            },
+            timeout: 30000,
+        });
 
-        const transcripts = searchApiResponse.data?.transcripts;
+        const transcripts = (searchApiResponse.data as { transcripts?: { text?: string }[] })
+            ?.transcripts;
+
         if (!Array.isArray(transcripts) || transcripts.length === 0) {
             throw new ValidationError(ERROR_MESSAGES.YOUTUBE.NO_TRANSCRIPT);
         }
 
         const transcriptText = transcripts
-            .map((segment: { text?: string }) => segment.text || '')
+            .map((segment) => segment.text || '')
             .filter(Boolean)
             .join(' ');
 
@@ -69,82 +110,105 @@ async function fetchYouTubeTranscript(youtubeUrl: string): Promise<string> {
         }
 
         return transcriptText;
-    } catch (youtubeError: any) {
-        // If it's already an AppError, rethrow it
+    } catch (youtubeError: unknown) {
         if (youtubeError instanceof ValidationError) {
             throw youtubeError;
         }
 
         if (axios.isAxiosError(youtubeError)) {
-            if (youtubeError.code === 'ECONNABORTED') {
-                throw new NetworkError(ERROR_MESSAGES.YOUTUBE.TIMEOUT, youtubeError);
-            }
-
-            const status = youtubeError.response?.status;
-            const apiError = youtubeError.response?.data?.error;
-
-            if (status === 401) {
-                throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_INVALID_KEY, youtubeError, 500);
-            }
-
-            if (status === 403) {
-                throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_ACCESS_DENIED, youtubeError, 500);
-            }
-
-            if (apiError) {
-                throw new ApiError(ERROR_MESSAGES.API.SEARCHAPI_ERROR(apiError), youtubeError, 500);
-            }
+            handleSearchApiAxiosError(youtubeError);
         }
 
         throw new NetworkError(ERROR_MESSAGES.YOUTUBE.FETCH_FAILED, youtubeError);
     }
 }
 
+function getBase64Buffer(base64Document: string): Buffer {
+    const base64Data = base64Document.includes(',')
+        ? base64Document.split(',')[1]
+        : base64Document;
+    return Buffer.from(base64Data, 'base64');
+}
+
+function getFileExtension(documentName: string): string {
+    const extension = documentName.split('.').pop()?.toLowerCase();
+    if (!extension) {
+        throw new FileError(ERROR_MESSAGES.DOCUMENT.UNKNOWN_TYPE);
+    }
+    return extension;
+}
+
+async function extractPdfText(buffer: Buffer): Promise<string> {
+    return new Promise<string>((resolve, reject) => {
+        const textItems: string[] = [];
+
+        new PdfReader().parseBuffer(
+            buffer,
+            (err: unknown, item: unknown) => {
+                if (err != null) {
+                    reject(err);
+                    return;
+                }
+
+                const typedItem = item as { text?: string } | null;
+
+                if (!typedItem) {
+                    resolve(textItems.join(' '));
+                    return;
+                }
+
+                if (typedItem.text) {
+                    textItems.push(typedItem.text);
+                }
+            }
+        );
+    });
+}
+
+
+async function extractWithMammoth(buffer: Buffer): Promise<string> {
+    const result = await mammoth.extractRawText({buffer});
+    return result.value;
+}
+
+async function extractDocText(buffer: Buffer): Promise<string> {
+    try {
+        return await extractWithMammoth(buffer);
+    } catch (error) {
+        throw new FileError(ERROR_MESSAGES.FILE.LEGACY_DOC_UNSUPPORTED, error);
+    }
+}
+
+function extractTxtText(buffer: Buffer): string {
+    return buffer.toString('utf-8');
+}
+
+async function extractDocumentContent(
+    extension: string,
+    buffer: Buffer
+): Promise<string> {
+    if (extension === 'pdf') {
+        return extractPdfText(buffer);
+    }
+    if (extension === 'docx') {
+        return extractWithMammoth(buffer);
+    }
+    if (extension === 'doc') {
+        return extractDocText(buffer);
+    }
+    if (extension === 'txt') {
+        return extractTxtText(buffer);
+    }
+    throw new FileError(ERROR_MESSAGES.FILE.UNSUPPORTED_FORMAT);
+}
+
 async function extractDocumentText(
     base64Document: string,
     documentName: string
 ): Promise<string> {
-    const base64Data = base64Document.includes(',')
-        ? base64Document.split(',')[1]
-        : base64Document;
-
-    const buffer = Buffer.from(base64Data, 'base64');
-    const extension = documentName.split('.').pop()?.toLowerCase();
-
-    if (!extension) {
-        throw new FileError(ERROR_MESSAGES.DOCUMENT.UNKNOWN_TYPE);
-    }
-
-    let extractedContent = '';
-
-    if (extension === 'pdf') {
-        extractedContent = await new Promise<string>((resolve, reject) => {
-            const textItems: string[] = [];
-            new PdfReader().parseBuffer(buffer, (err: Error | null, item: any) => {
-                if (err) {
-                    reject(err);
-                } else if (!item) {
-                    resolve(textItems.join(' '));
-                } else if (item.text) {
-                    textItems.push(item.text);
-                }
-            });
-        });
-    } else if (extension === 'docx') {
-        const result = await mammoth.extractRawText({buffer});
-        extractedContent = result.value;
-    } else if (extension === 'doc') {
-        try {
-            const result = await mammoth.extractRawText({buffer});
-            extractedContent = result.value;
-        } catch (error) {
-            throw new FileError(ERROR_MESSAGES.FILE.LEGACY_DOC_UNSUPPORTED, error);
-        }
-    } else if (extension === 'txt') {
-        extractedContent = buffer.toString('utf-8');
-    } else {
-        throw new FileError(ERROR_MESSAGES.FILE.UNSUPPORTED_FORMAT);
-    }
+    const buffer = getBase64Buffer(base64Document);
+    const extension = getFileExtension(documentName);
+    const extractedContent = await extractDocumentContent(extension, buffer);
 
     if (!extractedContent.trim()) {
         throw new FileError(ERROR_MESSAGES.FILE.NO_TEXT_EXTRACTED);
@@ -183,8 +247,7 @@ async function extractImageText(image: string): Promise<string> {
         }
 
         return extractedContent;
-    } catch (visionError) {
-        // If it's already an AppError, rethrow it
+    } catch (visionError: unknown) {
         if (visionError instanceof FileError) {
             throw visionError;
         }
@@ -192,19 +255,16 @@ async function extractImageText(image: string): Promise<string> {
     }
 }
 
-function buildPrompt(
-    text: string,
-    summaryLength: SummaryLength = 'medium',
-    analysisStyle: AnalysisStyle = 'casual'
-): string {
-    // Summary length instructions
+function getLengthInstruction(summaryLength: SummaryLength): string {
     const lengthInstructions: Record<SummaryLength, string> = {
         short: 'Provide a concise, brief summary (2-3 sentences) that captures only the most essential points.',
         medium: 'Provide a balanced summary (1-2 paragraphs) that captures all major ideas, arguments, and important context.',
         long: 'Provide a comprehensive, detailed summary (2-3 paragraphs) that thoroughly covers all major points, supporting details, and important nuances.',
     };
+    return lengthInstructions[summaryLength];
+}
 
-    // Analysis style instructions
+function getStyleInstruction(analysisStyle: AnalysisStyle): string {
     const styleInstructions: Record<AnalysisStyle, string> = {
         academic:
             'Use formal, scholarly language with precise terminology. Structure your analysis using academic conventions. Include appropriate terminology and maintain an objective, analytical tone throughout.',
@@ -213,9 +273,16 @@ function buildPrompt(
         technical:
             'Use professional, precise language with industry-specific terminology where appropriate. Be clear and direct. Focus on accuracy and detail while maintaining clarity for technical audiences.',
     };
+    return styleInstructions[analysisStyle];
+}
 
-    const lengthInstruction = lengthInstructions[summaryLength];
-    const styleInstruction = styleInstructions[analysisStyle];
+function buildPrompt(
+    text: string,
+    summaryLength: SummaryLength = 'medium',
+    analysisStyle: AnalysisStyle = 'casual'
+): string {
+    const lengthInstruction = getLengthInstruction(summaryLength);
+    const styleInstruction = getStyleInstruction(analysisStyle);
 
     return `You are an AI text analysis assistant. Your task is to analyze the user's input text and return all results strictly in the JSON structure described below.
 
@@ -267,10 +334,7 @@ Now analyze the following text using the specified settings:
 ${text}`;
 }
 
-function buildAnalysisResult(
-    text: string,
-    parsedResponse: any
-): AnalysisResult {
+function buildAnalysisResult(text: string, parsedResponse: AiAnalysisResponse): AnalysisResult {
     const readingTime =
         parsedResponse.reading_time_minutes ?? calculateReadingTime(text);
     const speakingTime = calculateSpeakingTime(text);
@@ -278,16 +342,14 @@ function buildAnalysisResult(
     const uniqueWords = countUniqueWords(text);
     const averageSentenceLength = calculateAverageSentenceLength(text);
     const topWords = getMostFrequentWords(text, 15);
-    const readingLevel =
-        parsedResponse.reading_level ?? 'General audience';
+    const readingLevel = parsedResponse.reading_level ?? 'General audience';
 
     return {
         summary: parsedResponse.summary ?? 'No summary available',
         keyPoints: Array.isArray(parsedResponse.key_points)
             ? parsedResponse.key_points
             : [],
-        explanation:
-            parsedResponse.explanation ?? 'No explanation available',
+        explanation: parsedResponse.explanation ?? 'No explanation available',
         readingTime,
         wordCount,
         readingLevel,
@@ -298,82 +360,109 @@ function buildAnalysisResult(
     };
 }
 
+function validateText(text: string): void {
+    if (!text || !text.trim()) {
+        throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
+    }
+
+    if (text.length > MAX_CHARS) {
+        throw new ValidationError(
+            ERROR_MESSAGES.VALIDATION.TEXT_TOO_LONG(MAX_CHARS)
+        );
+    }
+
+    if (text.trim().length < 10) {
+        throw new ValidationError(ERROR_MESSAGES.VALIDATION.TEXT_TOO_SHORT);
+    }
+}
+
+async function resolveTextSource(body: AnalyzeRequest): Promise<TextSourceResult> {
+    const {
+        text: inputText,
+        image,
+        document,
+        documentName,
+        youtubeUrl,
+    } = body;
+
+    if (youtubeUrl) {
+        const transcript = await fetchYouTubeTranscript(youtubeUrl);
+        return {text: transcript, extractedText: transcript};
+    }
+
+    if (document && documentName) {
+        const content = await extractDocumentText(document, documentName);
+        return {text: content, extractedText: content};
+    }
+
+    if (image) {
+        const content = await extractImageText(image);
+        return {text: content, extractedText: content};
+    }
+
+    return {text: inputText ?? '', extractedText: undefined};
+}
+
+async function callOpenAiAnalysis(
+    text: string,
+    summaryLength: SummaryLength,
+    analysisStyle: AnalysisStyle
+): Promise<AiAnalysisResponse> {
+    requireEnvVar('OPENAI_API_KEY');
+
+    const prompt = buildPrompt(text, summaryLength, analysisStyle);
+
+    const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        messages: [
+            {
+                role: 'system',
+                content:
+                    'You are a helpful assistant that analyzes text and responds only with valid JSON. ' +
+                    'Never include markdown formatting or code blocks in your response, only raw JSON.',
+            },
+            {
+                role: 'user',
+                content: prompt,
+            },
+        ],
+        temperature: 0.7,
+        max_tokens: 1000,
+        response_format: {type: 'json_object'},
+    });
+
+    const aiResponse = completion.choices[0]?.message?.content;
+    if (!aiResponse) {
+        throw new ApiError(ERROR_MESSAGES.API.NO_RESPONSE);
+    }
+
+    try {
+        return JSON.parse(aiResponse) as AiAnalysisResponse;
+    } catch (parseError) {
+        throw new ValidationError(
+            ERROR_MESSAGES.VALIDATION.INVALID_JSON,
+            parseError
+        );
+    }
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body: AnalyzeRequest = await request.json();
         const {
-            text: inputText,
-            image,
-            document,
-            documentName,
-            youtubeUrl,
             summaryLength = 'medium',
             analysisStyle = 'casual',
         } = body;
 
-        let text = inputText ?? '';
-        let extractedText: string | undefined;
+        const {text, extractedText} = await resolveTextSource(body);
 
-        if (youtubeUrl) {
-            const transcript = await fetchYouTubeTranscript(youtubeUrl);
-            text = transcript;
-            extractedText = transcript;
-        } else if (document && documentName) {
-            const content = await extractDocumentText(document, documentName);
-            text = content;
-            extractedText = content;
-        } else if (image) {
-            const content = await extractImageText(image);
-            text = content;
-            extractedText = content;
-        }
+        validateText(text);
 
-        if (!text || !text.trim()) {
-            throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_INPUT);
-        }
-
-        if (text.length > MAX_CHARS) {
-            throw new ValidationError(ERROR_MESSAGES.VALIDATION.TEXT_TOO_LONG(MAX_CHARS));
-        }
-
-        if (text.trim().length < 10) {
-            throw new ValidationError(ERROR_MESSAGES.VALIDATION.TEXT_TOO_SHORT);
-        }
-
-        requireEnvVar('OPENAI_API_KEY');
-
-        const prompt = buildPrompt(text, summaryLength, analysisStyle);
-
-        const completion = await openai.chat.completions.create({
-            model: 'gpt-4o-mini',
-            messages: [
-                {
-                    role: 'system',
-                    content:
-                        'You are a helpful assistant that analyzes text and responds only with valid JSON. ' +
-                        'Never include markdown formatting or code blocks in your response, only raw JSON.',
-                },
-                {
-                    role: 'user',
-                    content: prompt,
-                },
-            ],
-            temperature: 0.7,
-            max_tokens: 1000,
-            response_format: {type: 'json_object'},
-        });
-
-        const aiResponse = completion.choices[0]?.message?.content;
-        if (!aiResponse) {
-            throw new ApiError(ERROR_MESSAGES.API.NO_RESPONSE);
-        }
-
-        let parsedResponse;
-        try {
-            parsedResponse = JSON.parse(aiResponse);
-        } catch (parseError) {
-            throw new ValidationError(ERROR_MESSAGES.VALIDATION.INVALID_JSON, parseError);
-        }
+        const parsedResponse = await callOpenAiAnalysis(
+            text,
+            summaryLength,
+            analysisStyle
+        );
 
         const result = buildAnalysisResult(text, parsedResponse);
 
@@ -385,8 +474,7 @@ export async function POST(request: NextRequest) {
             },
             {status: 200}
         );
-    } catch (error) {
-        // If it's already a NextResponse (from createErrorResponse), return it
+    } catch (error: unknown) {
         if (error instanceof NextResponse) {
             return error;
         }

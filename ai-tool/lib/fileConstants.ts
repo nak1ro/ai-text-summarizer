@@ -1,8 +1,3 @@
-/**
- * File Upload Constants
- * Defines file size limits and allowed types
- */
-
 export const FILE_LIMITS = {
   IMAGE: {
     MAX_SIZE: 5 * 1024 * 1024, // 5MB

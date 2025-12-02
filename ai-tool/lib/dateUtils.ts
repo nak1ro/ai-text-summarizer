@@ -1,51 +1,68 @@
-/**
- * Date and Time Utility Functions
- * Centralized date formatting logic
- */
+// Date and Time Utility Functions
+// Centralized date formatting logic
 
-/**
- * Format timestamp to relative time
- * @param timestamp Unix timestamp in milliseconds
- * @param translations Translation object with time-related keys
- * @returns Formatted relative time string
- */
-export function formatRelativeTime(timestamp: number, t: any): string {
+export interface TimeTranslations {
+  justNow?: string;
+  minuteAgo?: string;
+  minutesAgo?: string;
+  hourAgo?: string;
+  hoursAgo?: string;
+  dayAgo?: string;
+  daysAgo?: string;
+}
+
+const MILLISECONDS_IN_SECOND = 1000;
+const SECONDS_IN_MINUTE = 60;
+const MINUTES_IN_HOUR = 60;
+const HOURS_IN_DAY = 24;
+
+function createDate(timestamp: number): Date {
+  return new Date(timestamp);
+}
+
+function getTimeDiffUnits(timestamp: number) {
   const now = Date.now();
   const diff = now - timestamp;
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
+  const seconds = Math.floor(diff / MILLISECONDS_IN_SECOND);
+  const minutes = Math.floor(seconds / SECONDS_IN_MINUTE);
+  const hours = Math.floor(minutes / MINUTES_IN_HOUR);
+  const days = Math.floor(hours / HOURS_IN_DAY);
 
-  if (seconds < 60) return t.justNow || 'just now';
-  if (minutes === 1) return t.minuteAgo || 'minute ago';
-  if (minutes < 60) return `${minutes} ${t.minutesAgo || 'minutes ago'}`;
-  if (hours === 1) return t.hourAgo || 'hour ago';
-  if (hours < 24) return `${hours} ${t.hoursAgo || 'hours ago'}`;
-  if (days === 1) return t.dayAgo || 'day ago';
-  if (days < 7) return `${days} ${t.daysAgo || 'days ago'}`;
-  
-  const date = new Date(timestamp);
-  return date.toLocaleDateString();
+  return { seconds, minutes, hours, days };
 }
 
-/**
- * Format date to localized string
- * @param timestamp Unix timestamp in milliseconds
- * @param locale Optional locale string (e.g., 'en-US', 'es-ES')
- * @returns Formatted date string
- */
-export function formatDate(timestamp: number, locale?: string): string {
-  return new Date(timestamp).toLocaleDateString(locale);
-}
+// Format timestamp to relative time
+export function formatRelativeTime(timestamp: number, translations: TimeTranslations): string {
+  const { seconds, minutes, hours, days } = getTimeDiffUnits(timestamp);
 
-/**
- * Format date and time to localized string
- * @param timestamp Unix timestamp in milliseconds
- * @param locale Optional locale string
- * @returns Formatted date and time string
- */
-export function formatDateTime(timestamp: number, locale?: string): string {
-  return new Date(timestamp).toLocaleString(locale);
+  if (seconds < SECONDS_IN_MINUTE) {
+    return translations.justNow || 'just now';
+  }
+
+  if (minutes === 1) {
+    return translations.minuteAgo || 'minute ago';
+  }
+
+  if (minutes < MINUTES_IN_HOUR) {
+    return `${minutes} ${translations.minutesAgo || 'minutes ago'}`;
+  }
+
+  if (hours === 1) {
+    return translations.hourAgo || 'hour ago';
+  }
+
+  if (hours < HOURS_IN_DAY) {
+    return `${hours} ${translations.hoursAgo || 'hours ago'}`;
+  }
+
+  if (days === 1) {
+    return translations.dayAgo || 'day ago';
+  }
+
+  if (days < 7) {
+    return `${days} ${translations.daysAgo || 'days ago'}`;
+  }
+
+  return createDate(timestamp).toLocaleDateString();
 }
 

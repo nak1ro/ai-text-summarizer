@@ -1,8 +1,3 @@
-/**
- * Reusable Collapse Toggle Button
- * Used for collapsible sections with animated arrow
- */
-
 import React from 'react';
 
 interface CollapseToggleProps {

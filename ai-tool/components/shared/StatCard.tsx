@@ -9,13 +9,13 @@ interface StatCardProps {
   value: string | number;
   label: string;
   unit?: string;
-  gradient: string; // e.g., 'from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20'
-  textGradient: string; // e.g., 'from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400'
-  borderColor: string; // e.g., 'border-green-200/50 dark:border-green-800/50'
-  glowColor: string; // e.g., 'bg-green-400/20 dark:bg-green-600/20'
-  textColor: string; // e.g., 'text-green-600 dark:text-green-400'
+  gradient: string;
+  textGradient: string;
+  borderColor: string;
+  glowColor: string;
+  textColor: string;
   size?: 'sm' | 'md' | 'lg';
-  children?: React.ReactNode; // For custom content like top words
+  children?: React.ReactNode;
 }
 
 export function StatCard({

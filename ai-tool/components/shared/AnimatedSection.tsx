@@ -1,8 +1,3 @@
-/**
- * Animated Section Component
- * Provides smooth expand/collapse animations
- */
-
 import React, { useRef, useEffect, useState } from 'react';
 
 interface AnimatedSectionProps {

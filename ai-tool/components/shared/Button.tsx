@@ -1,8 +1,3 @@
-/**
- * Reusable Button Component with Gradient Styles
- * Provides consistent button styling across the application
- */
-
 import React from 'react';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
