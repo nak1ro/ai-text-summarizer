@@ -2,6 +2,10 @@
 
 A web app that uses AI to analyze and summarize text. Built with Next.js, React, TypeScript, and Tailwind CSS.
 
+## Demo
+
+*https://ai-text-summarizer-fmh0.onrender.com/*
+
 ## Features
 
 **Multiple Input Methods**
@@ -40,12 +44,6 @@ A web app that uses AI to analyze and summarize text. Built with Next.js, React,
 Available in English, Spanish, German, French, and Polish
 
 Uses GPT-4o-mini for fast and affordable analysis.
-
-
-
-
-
-Contributions, issues, and feature requests are welcome.
 
 ## Acknowledgments
 
